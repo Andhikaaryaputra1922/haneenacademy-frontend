@@ -1,65 +1,169 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Brush,
+  LayoutGrid,
+  MonitorPlay,
+  PenTool,
+  Sparkles,
+  Type,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-[var(--base)] text-[var(--text)]">
+      <div className="mx-auto max-w-6xl px-6 py-12 md:py-20 space-y-12">
+
+        {/* HERO */}
+        <section className="relative overflow-hidden rounded-[36px] border border-[var(--border)] bg-[var(--surface)] p-8 md:p-14">
+          
+          <div className="absolute inset-0 opacity-60">
+            <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[var(--accent)] blur-3xl" />
+            <div className="absolute -bottom-40 -right-32 h-[28rem] w-[28rem] rounded-full bg-[var(--primary)]/20 blur-3xl" />
+          </div>
+
+          <div className="relative grid gap-12 lg:grid-cols-2 items-center">
+
+            {/* TEXT */}
+            <div>
+              <div className="flex items-center gap-2 text-sm text-[var(--muted)] font-semibold">
+                <Sparkles size={16} />
+                Premium Learning Platform
+              </div>
+
+              <h1 className="mt-5 text-4xl md:text-5xl font-black leading-tight">
+                LEVEL UP YOUR{" "}
+                <span className="inline-flex items-center gap-2 bg-[var(--accent)] px-4 py-2 rounded-full">
+                  SKILL
+                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[var(--text)] text-[var(--base)]">
+                    <ArrowRight size={16} />
+                  </span>
+                </span>
+              </h1>
+
+              <p className="mt-5 text-[var(--muted)] leading-relaxed max-w-xl">
+                Belajar lebih terstruktur dengan kurikulum modern, progress tracking, dan pengalaman belajar yang fokus ke hasil.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href="/courses"
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-[var(--primary-ink)]"
+                >
+                  Explore Courses <ArrowUpRight size={16} />
+                </Link>
+
+                <Link
+                  href="/login"
+                  className="rounded-full border border-[var(--border)] px-6 py-3 text-sm font-semibold hover:bg-black/5"
+                >
+                  Login
+                </Link>
+              </div>
+
+              {/* STATS */}
+              <div className="mt-10 grid grid-cols-3 gap-4">
+                {[
+                  { v: "2K+", l: "Students" },
+                  { v: "500+", l: "Lessons" },
+                  { v: "12+", l: "Tracks" },
+                ].map((s) => (
+                  <div
+                    key={s.l}
+                    className="rounded-2xl border border-[var(--border)] bg-[var(--base)] p-4 text-center"
+                  >
+                    <p className="text-2xl font-black">{s.v}</p>
+                    <p className="text-xs text-[var(--muted)] font-semibold mt-1">
+                      {s.l}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ICON GRID */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: <LayoutGrid />, c: "bg-[var(--primary)] text-[var(--primary-ink)]" },
+                { icon: <PenTool />, c: "bg-[var(--surface)] border border-[var(--border)]" },
+                { icon: <MonitorPlay />, c: "bg-[var(--primary)] text-[var(--primary-ink)] col-span-2 aspect-[2/1]" },
+                { icon: <Type />, c: "bg-[var(--surface)] border border-[var(--border)]" },
+                { icon: <Brush />, c: "bg-[var(--primary)] text-[var(--primary-ink)]" },
+              ].map((i, idx) => (
+                <div
+                  key={idx}
+                  className={`rounded-3xl grid place-items-center aspect-square ${i.c}`}
+                >
+                  {i.icon}
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+
+        {/* COURSES */}
+        <section className="space-y-8">
+
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="text-3xl font-black">Our Classes</h2>
+              <p className="text-[var(--muted)] mt-2 text-sm">
+                Pilih jalur belajar sesuai kebutuhanmu
+              </p>
+            </div>
+
+            <Link
+              href="/courses"
+              className="text-sm font-semibold flex items-center gap-2"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              View all <ArrowUpRight size={16} />
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              {
+                t: "Beginner",
+                d: "Belajar dasar sampai paham fundamental.",
+              },
+              {
+                t: "Pro Track",
+                d: "Project-based learning untuk skill nyata.",
+              },
+              {
+                t: "Fast Track",
+                d: "Belajar cepat, ringkas, langsung praktik.",
+              },
+            ].map((c) => (
+              <div
+                key={c.t}
+                className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 hover:translate-y-[-4px] transition"
+              >
+                <h3 className="font-black text-lg">{c.t}</h3>
+                <p className="text-sm text-[var(--muted)] mt-2 leading-relaxed">
+                  {c.d}
+                </p>
+
+                <div className="mt-6 flex gap-2">
+                  <span className="text-xs bg-[var(--base)] px-3 py-1 rounded-full">
+                    UX
+                  </span>
+                  <span className="text-xs bg-[var(--base)] px-3 py-1 rounded-full">
+                    UI
+                  </span>
+                  <span className="text-xs bg-[var(--base)] px-3 py-1 rounded-full">
+                    Dev
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </section>
+
+      </div>
+    </main>
   );
 }
