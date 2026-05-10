@@ -1,8 +1,6 @@
 import Link from "next/link";
 
 const sections = [
-  "User Management (CRUD + role control)",
-  "Course moderation + publish pipeline",
   "Attendance & gradebook operations",
   "Payment & transaction monitoring",
   "Audit log + backup orchestration",
@@ -23,8 +21,10 @@ export default function AdminPage() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {[
-              { href: "/admin/quizzes", title: "Quizzes", desc: "CRUD quiz + question builder + attempts" },
-              { href: "/admin/assignments", title: "Assignments", desc: "CRUD assignment + submissions + grading" },
+              { href: "/admin/packages", title: "Manajemen Paket", desc: "Kelola paket belajar, assign siswa, dan mapping course" },
+              { href: "/admin/users", title: "Manajemen User", desc: "CRUD user, kontrol role (Admin/Teacher/Student/Parent)" },
+              { href: "/admin/courses", title: "Moderasi Course", desc: "Review, publish, dan arsipkan course dari teacher" },
+              { href: "/admin/transactions", title: "Transaksi & Pembayaran", desc: "Monitoring pembayaran dan status transaksi siswa" },
             ].map((item) => (
               <Link
                 key={item.href}

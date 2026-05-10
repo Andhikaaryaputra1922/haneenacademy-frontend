@@ -72,6 +72,8 @@ export default async function TeacherAssignmentsPage() {
         </div>
 
         <AssignmentsClient
+          baseUrl="http://localhost:4000"
+          token={token}
           filteredCourses={filteredCourses.map((c) => ({ id: c.id, title: c.title }))}
           assignments={assignments}
         />

@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  LayoutDashboard, BookOpen, ClipboardList, HelpCircle,
+  PlaySquare, Award, Settings, LogOut,
+} from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,12 +43,31 @@ interface Quiz {
   totalQuestions: number;
 }
 
+interface PackageInfo {
+  enrollmentId: string;
+  status: string;
+  startedAt: string;
+  expiresAt: string | null;
+  daysRemaining: number | null;
+  isExpired: boolean;
+  package: {
+    id: string;
+    name: string;
+    description: string | null;
+    defaultLessonLimit: number;
+  };
+}
+
 interface DashboardData {
   student: { name: string; email: string };
   assignments: Assignment[];
   certificates: Certificate[];
   enrollments: Enrollment[];
   quizzes: Quiz[];
+  packageData?: {
+    activePackages: PackageInfo[];
+    hasActivePackage: boolean;
+  };
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -74,15 +97,16 @@ const MOCK_DATA: DashboardData = {
 
 // ─── Nav Config ───────────────────────────────────────────────────────────────
 
-type NavKey = "overview" | "enrollments" | "assignments" | "quizzes" | "certificates" | "settings";
+type NavKey = "overview" | "enrollments" | "assignments" | "quizzes" | "certificates" | "materi" | "settings";
 
-const NAV_ITEMS: { key: NavKey; label: string; icon: string }[] = [
-  { key: "overview",     label: "Overview",    icon: "🏠" },
-  { key: "enrollments",  label: "Kursus Saya", icon: "📚" },
-  { key: "assignments",  label: "Tugas",        icon: "📝" },
-  { key: "quizzes",      label: "Kuis",         icon: "❓" },
-  { key: "certificates", label: "Sertifikat",   icon: "🏅" },
-  { key: "settings",     label: "Pengaturan",   icon: "⚙️" },
+const NAV_ITEMS: { key: NavKey; label: string; icon: React.ReactNode }[] = [
+  { key: "overview",     label: "Overview",    icon: <LayoutDashboard size={16} /> },
+  { key: "enrollments",  label: "Kursus Saya", icon: <BookOpen size={16} /> },
+  { key: "assignments",  label: "Tugas",        icon: <ClipboardList size={16} /> },
+  { key: "quizzes",      label: "Kuis",         icon: <HelpCircle size={16} /> },
+  { key: "materi",       label: "Materi",       icon: <PlaySquare size={16} /> },
+  { key: "certificates", label: "Sertifikat",   icon: <Award size={16} /> },
+  { key: "settings",     label: "Pengaturan",   icon: <Settings size={16} /> },
 ];
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
@@ -125,14 +149,60 @@ function OverviewPage({ data }: { data: DashboardData }) {
   const upcoming = data.quizzes.filter((q) => q.status === "upcoming").length;
 
   const stats = [
-    { label: "Kursus Aktif",   value: data.enrollments.length,  icon: "📚", bg: "bg-teal-50",    text: "text-teal-700" },
-    { label: "Tugas Pending",  value: pending,                   icon: "📝", bg: "bg-amber-50",   text: "text-amber-700" },
-    { label: "Kuis Mendatang", value: upcoming,                  icon: "❓", bg: "bg-violet-50",  text: "text-violet-700" },
-    { label: "Sertifikat",     value: data.certificates.length,  icon: "🏅", bg: "bg-emerald-50", text: "text-emerald-700" },
+    { label: "Kursus Aktif",   value: data.enrollments.length,  icon: <BookOpen size={18} />,      bg: "bg-blue-50",    text: "text-blue-600" },
+    { label: "Tugas Pending",  value: pending,                   icon: <ClipboardList size={18} />, bg: "bg-amber-50",   text: "text-amber-600" },
+    { label: "Kuis Mendatang", value: upcoming,                  icon: <HelpCircle size={18} />,    bg: "bg-violet-50",  text: "text-violet-600" },
+    { label: "Sertifikat",     value: data.certificates.length,  icon: <Award size={18} />,         bg: "bg-emerald-50", text: "text-emerald-600" },
   ];
 
   return (
     <div className="space-y-8">
+      {/* Banner Paket */}
+      {data.packageData && (
+        <div className="mb-4">
+          {!data.packageData.hasActivePackage ? (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 flex items-start gap-4">
+              <div className="text-2xl mt-0.5">⚠️</div>
+              <div>
+                <h3 className="font-bold text-rose-800">Tidak ada paket belajar aktif</h3>
+                <p className="text-sm text-rose-600 mt-1">
+                  Materi premium terkunci karena kamu tidak memiliki paket belajar yang aktif, atau paket sebelumnya telah kedaluwarsa.
+                </p>
+                <button className="mt-3 text-xs font-bold text-white bg-rose-600 px-4 py-2 rounded-xl hover:bg-rose-700 transition">
+                  Lihat Pilihan Paket
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {data.packageData.activePackages.map((pkg) => {
+                const isExpiringSoon = pkg.daysRemaining !== null && pkg.daysRemaining <= 7;
+                return (
+                  <div key={pkg.enrollmentId} className={`rounded-2xl border p-4 flex items-center justify-between ${isExpiringSoon ? 'border-amber-200 bg-amber-50' : 'border-indigo-100 bg-indigo-50/50'}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl">{isExpiringSoon ? "⏳" : "💎"}</div>
+                      <div>
+                        <h3 className={`font-bold ${isExpiringSoon ? 'text-amber-800' : 'text-indigo-900'}`}>Paket {pkg.package.name} Aktif</h3>
+                        <p className={`text-sm mt-0.5 ${isExpiringSoon ? 'text-amber-700' : 'text-indigo-600'}`}>
+                          {pkg.expiresAt 
+                            ? `Berakhir pada: ${new Date(pkg.expiresAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`
+                            : 'Paket ini tidak memiliki masa kedaluwarsa.'}
+                        </p>
+                      </div>
+                    </div>
+                    {pkg.daysRemaining !== null && (
+                      <div className={`shrink-0 px-4 py-2 rounded-xl text-sm font-bold ${isExpiringSoon ? 'bg-amber-100 text-amber-800' : 'bg-indigo-100 text-indigo-700'}`}>
+                        Sisa {pkg.daysRemaining} Hari
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.label} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
@@ -292,12 +362,13 @@ export default function StudentDashboardClient() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [enrollRes, assignRes, quizRes, certRes, meRes] = await Promise.all([
+        const [enrollRes, assignRes, quizRes, certRes, meRes, pkgRes] = await Promise.all([
           fetch("/api/enrollments", { credentials: "include" }),
           fetch("/api/assignments", { credentials: "include" }),
           fetch("/api/quizzes", { credentials: "include" }),
           fetch("/api/certificates", { credentials: "include" }),
           fetch("/api/auth/me", { credentials: "include" }),
+          fetch("/api/student/my-packages", { credentials: "include" }),
         ]);
 
         const enrollData = enrollRes.ok ? await enrollRes.json() : { enrollments: [] };
@@ -305,9 +376,14 @@ export default function StudentDashboardClient() {
         const quizData = quizRes.ok ? await quizRes.json() : { quizzes: [] };
         const certData = certRes.ok ? await certRes.json() : { certificates: [] };
         const meData = meRes.ok ? await meRes.json() : { user: { name: "Siswa", email: "" } };
+        const pkgData = pkgRes.ok ? await pkgRes.json() : null;
 
         setData({
           student: { name: meData.user?.name ?? "Siswa", email: meData.user?.email ?? "" },
+          packageData: pkgData ? {
+            activePackages: pkgData.activePackages ?? [],
+            hasActivePackage: pkgData.hasActivePackage ?? false,
+          } : undefined,
           enrollments: (enrollData.enrollments ?? []).map((e: any) => ({
             id: e.id,
             courseName: e.course?.title ?? "",
@@ -414,16 +490,27 @@ export default function StudentDashboardClient() {
             return (
               <button
                 key={item.key}
-                onClick={() => setActiveNav(item.key)}
+                onClick={() => {
+                  if (item.key === "materi") {
+                    router.push("/student/materials");
+                  } else {
+                    setActiveNav(item.key);
+                  }
+                }}
                 title={collapsed ? item.label : undefined}
                 className={`
-                  w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all
+                  w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium
+                  transition-all duration-200 ease-in-out
                   ${collapsed ? "justify-center" : ""}
-                  ${active ? "bg-teal-50 text-teal-700" : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"}
+                  ${active
+                    ? "bg-blue-50 text-blue-700 shadow-sm"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 hover:translate-x-0.5"}
                 `}
               >
-                <span className="text-lg flex-shrink-0">{item.icon}</span>
-                {!collapsed && <span className="truncate">{item.label}</span>}
+                <span className="flex-shrink-0 transition-transform duration-200">{item.icon}</span>
+                {!collapsed && (
+                  <span className="truncate transition-all duration-200">{item.label}</span>
+                )}
               </button>
             );
           })}

@@ -1,43 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --base: #f5f1ea;
+  --base: #f8fafc;
   --surface: #ffffff;
-  --text: #1b1b1b;
-  --muted: #6b6b6b;
-  --border: #ddd5c9;
-  --primary: #3b4bff;
-  --primary-ink: #eef0ff;
-  --accent: #c8f95a;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-ink: #ffffff;
+  --accent: #f0f9ff;
   --danger: #ef4444;
   --warning: #f59e0b;
-  --success: #22c55e;
+  --success: #10b981;
   --background: var(--base);
   --foreground: var(--text);
 }
 
 :root[data-theme="light"] {
-  --base: #f5f1ea;
+  --base: #f8fafc;
   --surface: #ffffff;
-  --text: #1b1b1b;
-  --muted: #6b6b6b;
-  --border: #ddd5c9;
-  --primary: #3b4bff;
-  --primary-ink: #eef0ff;
-  --accent: #c8f95a;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #2563eb;
+  --primary-ink: #ffffff;
+  --accent: #f0f9ff;
   --danger: #ef4444;
   --warning: #f59e0b;
-  --success: #22c55e;
+  --success: #10b981;
   --background: var(--base);
   --foreground: var(--text);
 }
 
 :root[data-theme="dark"] {
-  --base: #0a0a0a;
-  --surface: #121212;
-  --text: #ededed;
-  --muted: #a1a1aa;
-  --border: rgba(255, 255, 255, 0.12);
+  --base: #0f172a;
+  --surface: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #334155;
+  --primary: #3b82f6;
+  --primary-ink: #ffffff;
+  --accent: #1e3a5f;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --success: #34d399;
   --background: var(--base);
   --foreground: var(--text);
 }
@@ -51,11 +57,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --base: #0a0a0a;
-    --surface: #121212;
-    --text: #ededed;
-    --muted: #a1a1aa;
-    --border: rgba(255, 255, 255, 0.12);
+    --base: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+    --primary: #3b82f6;
+    --primary-ink: #ffffff;
     --background: var(--base);
     --foreground: var(--text);
   }
@@ -66,4 +74,53 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI,
     Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* Smooth transitions */
+* { transition: background-color 0.15s ease, border-color 0.15s ease; }
+
+/* Page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.page-enter {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.slide-enter {
+  animation: slideIn 0.2s ease-out forwards;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* Button press effect */
+button:active {
+  transform: scale(0.97);
+}
+
+/* Smooth all transitions */
+*, *::before, *::after {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

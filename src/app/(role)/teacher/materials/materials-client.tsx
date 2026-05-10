@@ -22,6 +22,7 @@ export function MaterialsClient({ courses, lessonsPerCourse }: Props) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [linkUrl, setLinkUrl] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
@@ -36,15 +37,16 @@ export function MaterialsClient({ courses, lessonsPerCourse }: Props) {
 
   const handleUpload = async () => {
     if (!title || !courseId) { setMsg("Judul dan kelas wajib diisi."); return; }
-    if (!file) { setMsg("Pilih file terlebih dahulu."); return; }
+    if (!file && !linkUrl) { setMsg("Pilih file atau isi link materi."); return; }
     setLoading(true); setMsg("");
     try {
       const fd = new FormData();
       fd.append("title", title);
       if (desc) fd.append("description", desc);
-      fd.append("file", file);
+      if (file) fd.append("file", file);
+      if (linkUrl) fd.append("contentUrl", linkUrl);
       const res = await fetch("/api/courses/" + courseId + "/lessons", { method: "POST", credentials: "include", body: fd });
-      if (res.ok) { setMsg("Berhasil diupload!"); setTitle(""); setDesc(""); setFile(null); setPreviewUrl(null); setTimeout(() => window.location.reload(), 800); }
+      if (res.ok) { setMsg("Berhasil diupload!"); setTitle(""); setDesc(""); setFile(null); setLinkUrl(""); setPreviewUrl(null); setTimeout(() => window.location.reload(), 800); }
       else { const e = await res.json(); setMsg("Gagal: " + (e.message ?? "coba lagi")); }
     } catch { setMsg("Error."); } finally { setLoading(false); }
   };
@@ -106,7 +108,7 @@ export function MaterialsClient({ courses, lessonsPerCourse }: Props) {
             <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Deskripsi singkat materi..." className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-2">File Materi <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-2">File Materi (opsional)</label>
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition-colors">
               <input type="file" id="file-upload" accept="video/*,application/pdf" onChange={handleFileChange} className="hidden" />
               <label htmlFor="file-upload" className="cursor-pointer">
@@ -121,6 +123,18 @@ export function MaterialsClient({ courses, lessonsPerCourse }: Props) {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-1">Atau Link Materi (opsional)</label>
+            <input
+              type="url"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://drive.google.com/... atau https://youtu.be/..."
+              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+            <p className="text-xs text-gray-400 mt-1">Isi salah satu: upload file atau link.</p>
           </div>
         </div>
 

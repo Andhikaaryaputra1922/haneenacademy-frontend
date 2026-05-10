@@ -55,6 +55,20 @@ export function AssignmentsClient({
   const [localAssignments, setLocalAssignments] =
     useState(assignments);
 
+  const refreshAssignments = async () => {
+    setListLoading(true);
+    try {
+      const res = await fetch("/api/assignments", { method: "GET" });
+      if (!res.ok) return;
+      const data = (await res.json()) as { assignments?: Assignment[] };
+      if (Array.isArray(data.assignments)) {
+        setLocalAssignments(data.assignments);
+      }
+    } finally {
+      setListLoading(false);
+    }
+  };
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] =
     useState(false);
 
@@ -243,11 +257,9 @@ export function AssignmentsClient({
         setFile(null);
 
         setLinkUrl("");
-        setTimeout(() => window.location.reload(), 500);
 
-        setTimeout(() => {
-          ;
-        }, 1000);
+        // Refresh list tanpa reload halaman (lebih cepat dan tidak bikin state hilang)
+        await refreshAssignments();
       } else {
         toast.dismiss(loadingToast);
 

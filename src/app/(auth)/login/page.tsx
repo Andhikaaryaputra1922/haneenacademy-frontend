@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -137,6 +138,13 @@ export default function LoginPage() {
             {isLoading ? "Memproses..." : "Login"}
           </button>
         </form>
+
+        <div className="mt-8 text-center text-sm text-gray-600">
+          Belum punya akun?{" "}
+          <Link href="/register" className="font-semibold text-[#1d428a] hover:underline">
+            Daftar sekarang
+          </Link>
+        </div>
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-gray-500">
