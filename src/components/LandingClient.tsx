@@ -4,369 +4,360 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight, BookOpen, Users, Award, PlayCircle,
-  CheckCircle, Star, ChevronLeft, ChevronRight,
-  GraduationCap, Clock, Zap, Shield,
+  CheckCircle, Star, GraduationCap, Clock, Zap,
+  Shield, Menu, X, MessageCircle, Camera,
+  Book, Monitor, Calendar, Check
 } from "lucide-react";
+import { IslamicPanel, IslamicCard } from "@/components/ui/IslamicPanel";
 
-// ── Animated Counter ──────────────────────────────────────────────────────────
-function useCounter(target: number, duration: number = 2000, start: boolean = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let startTime: number;
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [start, target, duration]);
-  return count;
-}
+// Premium Hero Image generated (User needs to move this to public/hero.png)
+const HERO_IMAGE = "/hero.png";
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070&auto=format&fit=crop";
 
-// ── Intersection Observer Hook ─────────────────────────────────────────────────
-function useInView(threshold = 0.2) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, inView };
-}
-
-// ── Stats Section ─────────────────────────────────────────────────────────────
-function StatsSection() {
-  const { ref, inView } = useInView();
-  const students = useCounter(4000, 2000, inView);
-  const lessons  = useCounter(500,  1800, inView);
-  const teachers = useCounter(20,   1500, inView);
-  const rating   = useCounter(98,   2200, inView);
-
-  return (
-    <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
-      {[
-        { value: students, suffix: "+", label: "Siswa Aktif",     icon: <Users size={22} />,        color: "text-blue-600",   bg: "bg-blue-50" },
-        { value: lessons,  suffix: "+", label: "Materi & Rekaman",icon: <PlayCircle size={22} />,   color: "text-violet-600", bg: "bg-violet-50" },
-        { value: teachers, suffix: "+", label: "Pengajar Expert", icon: <GraduationCap size={22} />,color: "text-emerald-600",bg: "bg-emerald-50" },
-        { value: rating,   suffix: "%", label: "Kepuasan Siswa",  icon: <Star size={22} />,         color: "text-amber-600",  bg: "bg-amber-50" },
-      ].map((s) => (
-        <div key={s.label} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center hover:-translate-y-1 transition-transform duration-300">
-          <div className={"w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 " + s.bg + " " + s.color}>
-            {s.icon}
-          </div>
-          <p className={"text-3xl font-black " + s.color}>
-            {s.value.toLocaleString()}{s.suffix}
-          </p>
-          <p className="text-sm text-slate-500 mt-1">{s.label}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Carousel ──────────────────────────────────────────────────────────────────
-const SLIDES = [
-  {
-    title: "Belajar Bahasa Arab dari Nol",
-    desc: "Kurikulum terstruktur dengan buku Arabiyyah Baina Yadaik. Cocok untuk pemula hingga mahir.",
-    badge: "Paling Populer",
-    badgeColor: "bg-blue-100 text-blue-700",
-    meetings: "40x Pertemuan",
-    price: "Rp 399.000",
-    icon: <BookOpen size={32} />,
-    color: "from-blue-500 to-blue-700",
-  },
-  {
-    title: "Kelas Pemula Bahasa Arab",
-    desc: "Mulai dari dasar dengan buku Durusullughah. Belajar 4x per minggu bersama pengajar alumni LIPIA.",
-    badge: "Terjangkau",
-    badgeColor: "bg-emerald-100 text-emerald-700",
-    meetings: "16x Pertemuan",
-    price: "Rp 100.000",
-    icon: <GraduationCap size={32} />,
-    color: "from-emerald-500 to-emerald-700",
-  },
-  {
-    title: "Akses Materi 24 Jam",
-    desc: "Rekaman kelas dan materi bisa diakses kapan saja. Tidak perlu khawatir ketinggalan pelajaran.",
-    badge: "Gratis",
-    badgeColor: "bg-amber-100 text-amber-700",
-    meetings: "Unlimited",
-    price: "Included",
-    icon: <PlayCircle size={32} />,
-    color: "from-amber-500 to-orange-600",
-  },
-  {
-    title: "Sertifikat Resmi",
-    desc: "Dapatkan 2 sertifikat untuk yang full hadir dan menyelesaikan semua tugas.",
-    badge: "Eksklusif",
-    badgeColor: "bg-violet-100 text-violet-700",
-    meetings: "Full Course",
-    price: "2 Sertifikat",
-    icon: <Award size={32} />,
-    color: "from-violet-500 to-violet-700",
-  },
-];
-
-function Carousel() {
-  const [active, setActive] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  const go = (dir: number) => {
-    if (animating) return;
-    setAnimating(true);
-    setTimeout(() => {
-      setActive((prev) => (prev + dir + SLIDES.length) % SLIDES.length);
-      setAnimating(false);
-    }, 300);
-  };
+export default function LandingClient() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(() => go(1), 4000);
-    return () => clearInterval(t);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const s = SLIDES[active];
-
   return (
-    <div className="relative">
-      <div className={"rounded-3xl p-8 md:p-12 bg-gradient-to-br text-white overflow-hidden transition-all duration-500 " + s.color + (animating ? " opacity-0 scale-95" : " opacity-100 scale-100")}>
-        <div className="flex items-start justify-between gap-6">
-          <div className="flex-1">
-            <span className={"text-xs font-bold px-3 py-1 rounded-full " + s.badgeColor}>
-              {s.badge}
-            </span>
-            <h3 className="text-2xl md:text-3xl font-black mt-4">{s.title}</h3>
-            <p className="mt-3 text-white/80 leading-relaxed">{s.desc}</p>
-            <div className="mt-6 flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-sm font-semibold">
-                <Clock size={15} /> {s.meetings}
-              </div>
-              <div className="flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 text-sm font-semibold">
-                <Zap size={15} /> {s.price}
-              </div>
+    <main className="min-h-screen bg-[#FAF9F6] text-[#0F172A] selection:bg-[#1A2E44] selection:text-[#E5B54F]">
+      
+      {/* Navigation */}
+      <nav className={`fixed top-0 z-[100] w-full transition-all duration-300 ${
+        scrolled ? "bg-white/80 backdrop-blur-lg shadow-sm py-3" : "bg-transparent py-5"
+      }`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-12">
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0F172A] text-white shadow-lg transition-transform group-hover:rotate-12">
+              <BookOpen size={20} />
             </div>
-            <Link href="/login" className="mt-6 inline-flex items-center gap-2 bg-white text-slate-800 font-bold px-6 py-3 rounded-full hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
-              Daftar Sekarang <ArrowRight size={16} />
-            </Link>
-          </div>
-          <div className="hidden md:flex w-20 h-20 rounded-2xl bg-white/20 items-center justify-center shrink-0">
-            {s.icon}
-          </div>
-        </div>
-      </div>
+            <span className="text-xl font-black tracking-tighter uppercase">
+              HANEEN <span className="text-[#E5B54F]">ACADEMY</span>
+            </span>
+          </Link>
 
-      {/* Controls */}
-      <div className="flex items-center justify-between mt-4">
-        <div className="flex gap-2">
-          {SLIDES.map((_, i) => (
-            <button key={i} onClick={() => setActive(i)}
-              className={"h-2 rounded-full transition-all duration-300 " + (i === active ? "w-8 bg-blue-600" : "w-2 bg-slate-300")}
-            />
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => go(-1)} className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
-            <ChevronLeft size={16} />
-          </button>
-          <button onClick={() => go(1)} className="w-9 h-9 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-100 transition-colors">
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Features ──────────────────────────────────────────────────────────────────
-const FEATURES = [
-  { icon: <PlayCircle size={24} />,   title: "Rekaman 24 Jam",           desc: "Akses rekaman kelas kapan saja dan di mana saja.",              color: "text-blue-600",    bg: "bg-blue-50" },
-  { icon: <Users size={24} />,        title: "Kelas Interaktif",         desc: "Belajar langsung via Google Meet/Zoom bersama pengajar.",       color: "text-violet-600",  bg: "bg-violet-50" },
-  { icon: <Shield size={24} />,       title: "Pengajar Berpengalaman",   desc: "Alumni LIPIA dan S2 PBA yang sudah terverifikasi.",             color: "text-emerald-600", bg: "bg-emerald-50" },
-  { icon: <CheckCircle size={24} />,  title: "Kurikulum Terstruktur",    desc: "Materi disusun sistematis dari dasar hingga mahir.",            color: "text-amber-600",   bg: "bg-amber-50" },
-  { icon: <Award size={24} />,        title: "Sertifikat Resmi",         desc: "Dapatkan 2 sertifikat setelah menyelesaikan kursus.",           color: "text-rose-600",    bg: "bg-rose-50" },
-  { icon: <Zap size={24} />,          title: "Konsultasi Gratis",        desc: "Tanya pengajar 24 jam tanpa biaya tambahan.",                  color: "text-cyan-600",    bg: "bg-cyan-50" },
-];
-
-function FeaturesSection() {
-  const { ref, inView } = useInView();
-  return (
-    <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {FEATURES.map((f, i) => (
-        <div key={f.title}
-          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:-translate-y-1 transition-all duration-300"
-          style={{ transitionDelay: inView ? i * 80 + "ms" : "0ms", opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(20px)" }}
-        >
-          <div className={"w-11 h-11 rounded-xl flex items-center justify-center mb-4 " + f.bg + " " + f.color}>
-            {f.icon}
-          </div>
-          <h3 className="font-bold text-slate-800">{f.title}</h3>
-          <p className="text-sm text-slate-500 mt-2 leading-relaxed">{f.desc}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Testimonials ──────────────────────────────────────────────────────────────
-const TESTIMONIALS = [
-  { name: "Ahmad F.",   role: "Siswa Batch 01",    text: "Alhamdulillah setelah ikut kelas ini saya bisa baca kitab sendiri. Pengajarnya sabar dan materinya terstruktur.", rating: 5 },
-  { name: "Siti R.",    role: "Siswa Pemula",       text: "Saya dari nol sama sekali tidak tahu bahasa Arab. Sekarang sudah bisa memahami kalimat dasar. Recommended!", rating: 5 },
-  { name: "Ustadz B.",  role: "Alumni Kelas",       text: "Metode pengajaran yang dipakai sangat efektif. Dalam 2 bulan sudah bisa khatam 1 jilid Arabiyyah Baina Yadaik.", rating: 5 },
-  { name: "Fatimah N.", role: "Ibu Rumah Tangga",   text: "Jadwalnya fleksibel dan ada rekaman jadi bisa belajar sambil jaga anak. Sangat membantu!", rating: 5 },
-];
-
-function TestimonialsSection() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-      {TESTIMONIALS.map((t) => (
-        <div key={t.name} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-          <div className="flex gap-1 mb-3">
-            {Array.from({ length: t.rating }).map((_, i) => (
-              <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+          <div className="hidden items-center gap-10 md:flex">
+            {["Program", "Kurikulum", "Testimoni", "FAQ"].map((item) => (
+              <a 
+                key={item} 
+                href={`#${item.toLowerCase()}`} 
+                className="text-xs font-black uppercase tracking-widest text-slate-500 hover:text-[#1A2E44] transition-colors"
+              >
+                {item}
+              </a>
             ))}
           </div>
-          <p className="text-slate-600 text-sm leading-relaxed">"{t.text}"</p>
-          <div className="mt-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm">
-              {t.name[0]}
-            </div>
-            <div>
-              <p className="font-semibold text-sm text-slate-800">{t.name}</p>
-              <p className="text-xs text-slate-400">{t.role}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-export default function LandingClient() {
-  return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <BookOpen size={16} className="text-white" />
-            </div>
-            <span className="font-black text-lg">Haneen<span className="text-blue-600">.</span></span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
-            <a href="#fitur" className="hover:text-slate-900 transition-colors">Fitur</a>
-            <a href="#kelas" className="hover:text-slate-900 transition-colors">Kelas</a>
-            <a href="#testimoni" className="hover:text-slate-900 transition-colors">Testimoni</a>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors">
-              Masuk
-            </Link>
-            <Link href="/login" className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors">
-              Daftar Gratis
+          <div className="hidden items-center gap-4 md:flex">
+            <Link href="/login" className="text-sm font-bold text-slate-600 hover:text-[#0F172A]">Masuk</Link>
+            <Link 
+              href="/login" 
+              className="rounded-full bg-[#1A2E44] px-7 py-3 text-sm font-bold text-white shadow-xl shadow-slate-200 hover:bg-[#E5B54F] hover:text-[#1A2E44] transition-all active:scale-95"
+            >
+              Daftar Sekarang
             </Link>
           </div>
+
+          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </nav>
 
-      <div className="max-w-6xl mx-auto px-6 py-16 space-y-24">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-32 pb-20 md:pt-48 md:pb-32">
+        {/* Background Decorative */}
+        <div className="absolute top-0 right-0 -z-10 h-[800px] w-[800px] rounded-full bg-[#8B0000]/5 blur-[120px]" />
+        <div className="absolute -bottom-40 -left-40 -z-10 h-[600px] w-[600px] rounded-full bg-blue-500/5 blur-[100px]" />
 
-        {/* Hero */}
-        <section className="text-center space-y-6">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full">
-            <Zap size={14} /> Platform Belajar Bahasa Arab Online
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black leading-tight max-w-3xl mx-auto">
-            Belajar Bahasa Arab{" "}
-            <span className="text-blue-600">Lebih Mudah</span>{" "}
-            & Terstruktur
-          </h1>
-          <p className="text-slate-500 text-lg max-w-xl mx-auto leading-relaxed">
-            Bergabung dengan 4000+ siswa yang sudah membuktikan metode belajar Haneen Academy. Pengajar alumni LIPIA, materi terstruktur, akses 24 jam.
-          </p>
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link href="/login" className="inline-flex items-center gap-2 bg-blue-600 text-white font-bold px-8 py-4 rounded-2xl hover:bg-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
-              Mulai Belajar Sekarang <ArrowRight size={18} />
-            </Link>
-            <Link href="#kelas" className="inline-flex items-center gap-2 border border-slate-200 text-slate-700 font-semibold px-8 py-4 rounded-2xl hover:bg-slate-50 transition-colors">
-              Lihat Kelas
-            </Link>
-          </div>
-          <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
-            <CheckCircle size={14} className="text-emerald-500" />
-            Gratis konsultasi 24 jam
-            <span className="mx-2">·</span>
-            <CheckCircle size={14} className="text-emerald-500" />
-            Rekaman kelas tersedia
-            <span className="mx-2">·</span>
-            <CheckCircle size={14} className="text-emerald-500" />
-            Sertifikat resmi
-          </div>
-        </section>
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            
+            <div className="space-y-8 animate-in fade-in slide-in-from-left-10 duration-1000">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#1A2E44]/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-[#1A2E44]">
+                <Zap size={14} className="text-[#E5B54F]" /> Pendaftaran Bootcamp Batch 02
+              </div>
+              
+              <h1 className="font-serif text-5xl md:text-7xl font-black leading-[1.1] tracking-tight">
+                AL ARABIYYAH<br />
+                <span className="text-[#E5B54F]">BAINA YADAIK</span>
+              </h1>
+              
+              <p className="max-w-lg text-lg leading-relaxed text-slate-600">
+                Belajar Bahasa Arab dengan metode terbaik, terstruktur, dan sesuai kebutuhanmu. 
+                Program intensif khusus pendaftar <span className="font-bold text-[#0F172A]">JILID 1 (BATCH 02)</span>.
+              </p>
 
-        {/* Stats */}
-        <section>
-          <StatsSection />
-        </section>
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link 
+                  href="/login" 
+                  className="group flex items-center gap-3 rounded-2xl bg-[#1A2E44] px-8 py-4 text-sm font-black text-white shadow-2xl shadow-slate-300 transition-all hover:bg-[#E5B54F] hover:text-[#1A2E44] hover:-translate-y-1 active:scale-95"
+                >
+                  Join Bootcamp Sekarang <ArrowRight className="transition-transform group-hover:translate-x-1" size={18} />
+                </Link>
+                <div className="flex items-center gap-4 rounded-2xl bg-white border border-slate-100 p-2 pr-6 shadow-sm">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+                    <Book size={20} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Bonus Khusus</p>
+                    <p className="text-xs font-bold text-slate-700">Gratis E-Book (Rp 150rb)</p>
+                  </div>
+                </div>
+              </div>
 
-        {/* Carousel */}
-        <section id="kelas" className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-black">Program Unggulan</h2>
-            <p className="text-slate-500 mt-2">Pilih program yang sesuai dengan kebutuhanmu</p>
-          </div>
-          <Carousel />
-        </section>
-
-        {/* Features */}
-        <section id="fitur" className="space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-black">Kenapa Haneen Academy?</h2>
-            <p className="text-slate-500 mt-2">Semua yang kamu butuhkan untuk belajar bahasa Arab ada di sini</p>
-          </div>
-          <FeaturesSection />
-        </section>
-
-        {/* Testimonials */}
-        <section id="testimoni" className="space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-black">Kata Mereka</h2>
-            <p className="text-slate-500 mt-2">Ribuan siswa sudah merasakan manfaatnya</p>
-          </div>
-          <TestimonialsSection />
-        </section>
-
-        {/* CTA */}
-        <section className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-10 md:p-16 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-black">Siap Mulai Belajar?</h2>
-          <p className="mt-4 text-blue-100 text-lg max-w-xl mx-auto">
-            Bergabunglah sekarang dan dapatkan akses ke semua materi, rekaman kelas, dan konsultasi gratis.
-          </p>
-          <Link href="/login" className="mt-8 inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-4 rounded-2xl hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5">
-            Daftar Sekarang <ArrowRight size={18} />
-          </Link>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-slate-200 pt-8 text-center text-sm text-slate-400">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
-              <BookOpen size={14} className="text-white" />
+              <div className="flex items-center gap-6 pt-6">
+                <div className="flex -space-x-3">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="h-10 w-10 rounded-full border-2 border-white bg-slate-200" />
+                  ))}
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#8B0000] text-[10px] font-bold text-white">+4k</div>
+                </div>
+                <p className="text-xs font-medium text-slate-400">Telah bergabung bersama alumni LIPIA & S2 PBA</p>
+              </div>
             </div>
-            <span className="font-black text-slate-700">Haneen<span className="text-blue-600">.</span></span>
-          </div>
-          <p>© 2026 Haneen Academy. All rights reserved.</p>
-          <p className="mt-1">📞 0812 3955 1423 (Minha) · Instagram: @haneen_arabic</p>
-        </footer>
 
-      </div>
+            <div className="relative animate-in fade-in zoom-in-95 duration-1000">
+              <div className="relative z-10 overflow-hidden rounded-[40px] shadow-2xl bg-slate-100 aspect-video md:aspect-square flex items-center justify-center">
+                <img 
+                  src={HERO_IMAGE} 
+                  alt="Learning Arabic" 
+                  className="w-full h-full object-cover transform transition-transform hover:scale-105 duration-700" 
+                  onError={(e) => {
+                    e.currentTarget.src = FALLBACK_IMAGE;
+                  }}
+                />
+              </div>
+              {/* Floating Badge */}
+              <div className="absolute -right-8 -top-8 z-20 h-32 w-32 animate-bounce items-center justify-center rounded-full bg-[#E5B54F] p-4 shadow-xl flex flex-col text-center">
+                <p className="text-[10px] font-black uppercase text-[#1A2E44] leading-tight">Kuota<br/>Terbatas</p>
+                <div className="mt-1 h-px w-8 bg-[#1A2E44]/30" />
+                <p className="mt-1 text-[8px] font-bold text-[#1A2E44] leading-tight">Batch 02 Segera Dimulai!</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Apa yang Kamu Dapatkan */}
+      <section id="program" className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <div className="mb-16 text-center">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-[#8B0000] mb-3">Benefits</p>
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight">APA YANG <span className="text-slate-400">KAMU DAPATKAN?</span></h2>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { title: "HABIS 1 BUKU DALAM 2 BULAN", icon: <BookOpen />, desc: "Target kurikulum terukur untuk pemahaman maksimal." },
+              { title: "PENGAJAR PROFESIONAL", icon: <GraduationCap />, desc: "Alumni LIPIA & S2 Pendidikan Bahasa Arab." },
+              { title: "PERTEMUAN 4X PER-MINGGU", icon: <Calendar />, desc: "Intensitas belajar tinggi untuk hasil yang nyata." },
+              { title: "GRATIS KONSULTASI 24 JAM", icon: <MessageCircle />, desc: "Bimbingan langsung via grup eksklusif." },
+              { title: "GRATIS MATERI & REKAMAN", icon: <PlayCircle />, desc: "Akses materi kapan saja tanpa batas waktu." },
+              { title: "2 SERTIFIKAT RESMI", icon: <Award />, desc: "Sertifikat kehadiran dan sertifikat kelulusan." },
+            ].map((item, i) => (
+              <IslamicCard key={i}>
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F9F6EE] text-[#1A2E44] shadow-sm transition-transform group-hover:scale-110 group-hover:bg-[#1A2E44] group-hover:text-[#E5B54F]">
+                  {item.icon}
+                </div>
+                <h3 className="mb-3 text-sm font-black uppercase tracking-wider text-[#1A2E44] leading-snug">{item.title}</h3>
+                <p className="text-xs leading-relaxed text-slate-500">{item.desc}</p>
+              </IslamicCard>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Investasi Section */}
+      <section className="bg-[#0F172A] py-24 text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#8B0000]/10 skew-x-12 transform translate-x-32" />
+        
+        <div className="mx-auto max-w-7xl px-6 md:px-12 relative z-10">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            <div className="space-y-8">
+              <h2 className="text-4xl md:text-6xl font-black leading-tight tracking-tight">
+                INVESTASI TERBAIK<br />
+                <span className="text-[#8B0000]">UNTUK DIRIMU</span>
+              </h2>
+              <p className="text-slate-400 leading-relaxed">
+                Bergabunglah dengan ratusan pendaftar lainnya di Batch 02. Dapatkan akses penuh ke materi terstruktur dan bimbingan pengajar ahli.
+              </p>
+              
+              <div className="grid grid-cols-3 gap-6">
+                {[
+                  { label: "Kelas Interaktif", icon: <Users /> },
+                  { label: "Materi Terstruktur", icon: <Book /> },
+                  { label: "Akses 24 Jam", icon: <Clock /> },
+                ].map((item, i) => (
+                  <div key={i} className="flex flex-col items-center gap-3 text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 text-[#8B0000]">
+                      {item.icon}
+                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative">
+              <IslamicPanel variant="white" className="p-10 md:p-16 border-t-4 border-[#E5B54F]">
+                <p className="text-center text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Harga Spesial Batch 02</p>
+                <div className="flex items-center justify-center gap-2 mb-2 text-[#1A2E44]">
+                  <span className="text-4xl font-black">Rp</span>
+                  <span className="text-7xl font-black tracking-tighter">399.000</span>
+                </div>
+                <p className="text-center text-sm font-bold text-[#E5B54F] mb-8">(40x Pertemuan Intensif)</p>
+                
+                <ul className="mb-10 space-y-4">
+                  {["Akses Selamanya", "Grup WhatsApp Eksklusif", "Sertifikat Digital", "Free Konsultasi"].map(t => (
+                    <li key={t} className="flex items-center gap-3 text-sm font-bold">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                        <Check size={12} />
+                      </div>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link 
+                  href="/login" 
+                  className="block w-full rounded-2xl bg-[#0F172A] py-5 text-center text-sm font-black uppercase tracking-widest text-white shadow-xl hover:bg-[#8B0000] transition-all active:scale-95"
+                >
+                  Ambil Slot Sekarang
+                </Link>
+              </IslamicPanel>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Jadwal Belajar */}
+      <section className="bg-white py-24">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FAF9F6] text-[#8B0000] mb-6">
+            <Calendar size={32} />
+          </div>
+          <h2 className="text-3xl font-black mb-12">JADWAL BELAJAR</h2>
+          
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              { label: "Hari", value: "Senin – Jum’at", icon: <Calendar /> },
+              { label: "Waktu", value: "19.00 – 20.00 WIB", icon: <Clock /> },
+              { label: "Platform", value: "Google Meet / Zoom", icon: <Monitor /> },
+              { label: "Durasi", value: "60 Menit per Sesi", icon: <Clock /> },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-5 rounded-3xl bg-[#FAF9F6] p-6 text-left border border-transparent hover:border-[#8B0000]/10 transition-colors">
+                <div className="text-[#8B0000]">{item.icon}</div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{item.label}</p>
+                  <p className="text-base font-bold text-slate-800">{item.value}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-12 rounded-3xl bg-[#0F172A] p-8 text-white">
+            <p className="text-sm font-medium leading-relaxed italic">
+              "Buku yang digunakan belajar: <span className="text-amber-400 font-bold">ARABIYYAH BAINA YADAIK</span>"
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Let's Join Us / Contact */}
+      <section className="bg-[#FAF9F6] py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-12 text-center">
+          <h2 className="text-3xl font-black mb-16 tracking-[0.2em] uppercase">LET'S JOIN US!</h2>
+          
+          <div className="grid gap-12 md:grid-cols-2 items-center">
+            <div className="flex flex-col items-center gap-6 rounded-[40px] bg-white p-12 shadow-xl">
+              <div className="h-48 w-48 bg-slate-100 rounded-2xl flex items-center justify-center border-4 border-dashed border-slate-200">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">QR CODE DISINI</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-black uppercase tracking-widest text-[#0F172A]">SCAN QR CODE</p>
+                <p className="text-xs text-slate-400">Untuk info pendaftaran lebih lanjut</p>
+              </div>
+            </div>
+
+            <div className="space-y-6 text-left">
+              <div className="flex items-center gap-6 rounded-3xl bg-white p-8 shadow-md hover:shadow-xl transition-shadow">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-600 shadow-sm">
+                  <MessageCircle size={28} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">WhatsApp Admin</p>
+                  <p className="text-lg font-black text-slate-800">0812 3955 1423 (MINHA)</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6 rounded-3xl bg-white p-8 shadow-md hover:shadow-xl transition-shadow">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-50 text-pink-600 shadow-sm">
+                  <Camera size={28} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Instagram</p>
+                  <p className="text-lg font-black text-slate-800">@haneen_arabic</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white py-12 border-t border-slate-100">
+        <div className="mx-auto max-w-7xl px-6 md:px-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-[#0F172A] rounded-lg flex items-center justify-center text-white">
+                <BookOpen size={16} />
+              </div>
+              <span className="font-black tracking-widest text-sm uppercase">Haneen Academy</span>
+            </div>
+            
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">© 2026 SEMUA HAK DILINDUNGI</p>
+            
+            <div className="flex items-center gap-6">
+              <a href="#" className="text-slate-400 hover:text-[#8B0000] transition-colors"><Camera size={18} /></a>
+              <a href="#" className="text-slate-400 hover:text-[#8B0000] transition-colors"><PlayCircle size={18} /></a>
+              <a href="#" className="text-slate-400 hover:text-[#8B0000] transition-colors"><MessageCircle size={18} /></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-[110] bg-white p-6 animate-in slide-in-from-top duration-300">
+          <div className="flex justify-end mb-12">
+            <button onClick={() => setMenuOpen(false)}><X size={32} /></button>
+          </div>
+          <div className="flex flex-col gap-8 text-center">
+            {["Program", "Kurikulum", "Testimoni", "FAQ"].map((item) => (
+              <a 
+                key={item} 
+                href={`#${item.toLowerCase()}`} 
+                onClick={() => setMenuOpen(false)}
+                className="text-2xl font-black uppercase tracking-widest text-slate-800"
+              >
+                {item}
+              </a>
+            ))}
+            <div className="pt-12 space-y-4">
+              <Link href="/login" className="block w-full py-5 rounded-2xl bg-slate-100 font-bold">Masuk</Link>
+              <Link href="/login" className="block w-full py-5 rounded-2xl bg-[#0F172A] text-white font-bold">Daftar Sekarang</Link>
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
@@ -10,6 +11,12 @@ import "./globals.css";
 FONT
 ========================================
 */
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +43,7 @@ export default function RootLayout({
     <html
       lang="id"
       className={`
+        ${inter.variable}
         ${geistSans.variable}
         ${geistMono.variable}
         h-full

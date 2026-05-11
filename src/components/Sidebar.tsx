@@ -3,16 +3,26 @@
 import { useRouter } from "next/navigation";
 import { LogOut, LayoutDashboard, User, Settings } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { PremiumModal } from "@/components/ui/PremiumFeedback";
 
 export function Sidebar() {
   const router = useRouter();
 
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
   const handleLogout = async () => {
-    if (!confirm("Yakin ingin keluar?")) return;
-    const res = await fetch("/api/auth/logout", { method: "POST" });
-    if (res.ok) {
-      router.refresh();
-      router.push("/login");
+    setLogoutLoading(true);
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (res.ok) {
+        router.push("/login");
+        router.refresh();
+      }
+    } finally {
+      setLogoutLoading(false);
+      setShowLogoutModal(false);
     }
   };
 
@@ -36,13 +46,24 @@ export function Sidebar() {
       {/* Tombol Logout (Paling Bawah) */}
       <div className="mt-auto pt-4 border-t border-[var(--border)]">
         <button
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
+          disabled={logoutLoading}
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition-all hover:bg-red-50 hover:shadow-inner"
         >
           <LogOut size={20} />
           KELUAR (LOGOUT)
         </button>
       </div>
+      <PremiumModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+        title="Konfirmasi Logout"
+        message="Yakin ingin keluar dari Haneen Academy?"
+        type="logout"
+        confirmText="Keluar Sekarang"
+        loading={logoutLoading}
+      />
     </aside>
   );
 }

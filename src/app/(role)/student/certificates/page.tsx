@@ -30,9 +30,9 @@ export default async function StudentCertificatesPage() {
   const certificates = await getCertificates();
 
   return (
-    <main className="min-h-screen bg-[var(--base)] px-6 py-10">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-[40px] border border-[var(--border)] bg-[var(--surface)] p-7 md:p-10">
+    <div className="px-6 py-10">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-[40px] border border-[var(--border)] bg-white p-7 md:p-10 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h1 className="text-3xl font-black tracking-tight text-[var(--text)] md:text-4xl">
@@ -44,12 +44,6 @@ export default async function StudentCertificatesPage() {
             </div>
             <div className="flex items-center gap-3">
               <BackButton />
-              <Link
-                href="/student"
-                className="inline-flex rounded-full border border-[var(--border)] bg-[var(--base)]/70 px-5 py-3 text-sm font-semibold text-[var(--text)] hover:bg-black/5"
-              >
-                Dashboard
-              </Link>
             </div>
           </div>
 
@@ -58,7 +52,7 @@ export default async function StudentCertificatesPage() {
               certificates.map((c) => (
                 <div
                   key={c.id}
-                  className="rounded-[32px] border border-[var(--border)] bg-[var(--base)]/70 p-6"
+                  className="rounded-[32px] border border-[var(--border)] bg-slate-50/50 p-6 shadow-sm"
                 >
                   <p className="text-sm font-semibold text-[var(--muted)]">
                     {c.course?.title ?? "Course"}
@@ -72,14 +66,14 @@ export default async function StudentCertificatesPage() {
                 </div>
               ))
             ) : (
-              <div className="rounded-[32px] border border-dashed border-[var(--border)] bg-[var(--base)]/70 p-8 text-[var(--muted)] md:col-span-2">
+              <div className="rounded-[32px] border border-dashed border-[var(--border)] bg-slate-50/50 p-8 text-[var(--muted)] md:col-span-2">
                 Belum ada sertifikat.
               </div>
             )}
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

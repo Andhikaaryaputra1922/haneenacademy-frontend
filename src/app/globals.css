@@ -1,126 +1,115 @@
 @import "tailwindcss";
 
+/* ─── Al Faiz Color System ─────────────────────────── */
 :root {
-  --base: #f8fafc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #2563eb;
-  --primary-ink: #ffffff;
-  --accent: #f0f9ff;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --success: #10b981;
-  --background: var(--base);
-  --foreground: var(--text);
+  --primary:       #1A2E44;
+  --primary-dark:  #0F1C2E;
+  --primary-light: #2A3E54;
+  --primary-ink:   #ffffff;
+  --accent:        #F9F6EE;
+  --amber:         #E5B54F;
+
+  --base:          #FAF9F6;
+  --surface:       #ffffff;
+  --text:          #0F172A;
+  --muted:         #64748B;
+  --border:        #E2E8F0;
+
+  --danger:        #ef4444;
+  --warning:       #f59e0b;
+  --success:       #10b981;
+  --background:    var(--base);
+  --foreground:    var(--text);
 }
 
 :root[data-theme="light"] {
-  --base: #f8fafc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #2563eb;
-  --primary-ink: #ffffff;
-  --accent: #f0f9ff;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --success: #10b981;
-  --background: var(--base);
-  --foreground: var(--text);
+  --primary:       #1A2E44;
+  --primary-dark:  #0F1C2E;
+  --primary-ink:   #ffffff;
+  --accent:        #F9F6EE;
+  --base:          #FAF9F6;
+  --surface:       #ffffff;
+  --text:          #0F172A;
+  --muted:         #64748B;
+  --border:        #E2E8F0;
+  --background:    var(--base);
+  --foreground:    var(--text);
 }
 
 :root[data-theme="dark"] {
-  --base: #0f172a;
-  --surface: #1e293b;
-  --text: #f1f5f9;
-  --muted: #94a3b8;
-  --border: #334155;
-  --primary: #3b82f6;
-  --primary-ink: #ffffff;
-  --accent: #1e3a5f;
-  --danger: #f87171;
-  --warning: #fbbf24;
-  --success: #34d399;
-  --background: var(--base);
-  --foreground: var(--text);
+  --primary:       #C0392B;
+  --primary-dark:  #8B0000;
+  --primary-ink:   #ffffff;
+  --accent:        #2a0a0a;
+  --base:          #140505;
+  --surface:       #1E0A0A;
+  --text:          #F5EAEA;
+  --muted:         #C09090;
+  --border:        #3A1010;
+  --background:    var(--base);
+  --foreground:    var(--text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --base: #0f172a;
-    --surface: #1e293b;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --border: #334155;
-    --primary: #3b82f6;
-    --primary-ink: #ffffff;
-    --background: var(--base);
-    --foreground: var(--text);
+    --primary:       #C0392B;
+    --primary-dark:  #8B0000;
+    --primary-ink:   #ffffff;
+    --accent:        #2a0a0a;
+    --base:          #140505;
+    --surface:       #1E0A0A;
+    --text:          #F5EAEA;
+    --muted:         #C09090;
+    --border:        #3A1010;
+    --background:    var(--base);
+    --foreground:    var(--text);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI,
-    Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: var(--font-inter), var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+/* ─── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-/* Smooth transitions */
-* { transition: background-color 0.15s ease, border-color 0.15s ease; }
-
-/* Page transitions */
+/* ─── Animations ─────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(-8px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-
-.page-enter {
-  animation: fadeIn 0.2s ease-out forwards;
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(229, 181, 79, 0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(229, 181, 79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(229, 181, 79, 0); }
 }
 
-.slide-enter {
-  animation: slideIn 0.2s ease-out forwards;
-}
+.page-enter  { animation: fadeIn 0.2s ease-out forwards; }
+.slide-enter { animation: slideIn 0.2s ease-out forwards; }
 
-/* Card hover effects */
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
+/* ─── Card hover ─────────────────────────────────────── */
+.card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,46,68,0.10); }
 
-/* Button press effect */
-button:active {
-  transform: scale(0.97);
-}
+/* ─── Button press ───────────────────────────────────── */
+button:active { transform: scale(0.97); }
 
-/* Smooth all transitions */
-*, *::before, *::after {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
+*, *::before, *::after { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }

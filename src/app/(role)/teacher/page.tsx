@@ -113,31 +113,23 @@ export default async function TeacherPage() {
   const role = auth?.role ?? "UNKNOWN";
 
   return (
-    <div className="flex min-h-screen bg-[var(--base)]">
-      <TeacherSidebar role={role} />
-
-      <main className="flex-1 min-w-0 overflow-y-auto">
-
-        {/* Top Bar */}
-        <div className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/80 px-6 backdrop-blur-sm">
-          <div>
-            <h1 className="text-sm font-bold text-[var(--text)]">Dashboard</h1>
-            <p className="text-[11px] text-[var(--muted)]">Selamat datang kembali</p>
+    <div className="p-6 md:p-10">
+      <div className="max-w-6xl mx-auto">
+        {/* Standardized Header */}
+        <header className="mb-10">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-block h-1.5 w-8 rounded-full bg-[#8B0000]" />
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-[#8B0000]">Dashboard</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/teacher/announcements"
-              className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--base)] text-[var(--muted)] hover:text-[var(--text)] transition"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-            </Link>
-          </div>
-        </div>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
+            Panel Pengajar
+          </h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Kelola materi, tugas, dan pantau perkembangan siswa Anda.
+          </p>
+        </header>
 
-        <div className="px-6 py-5 space-y-6">
+        <div className="space-y-10">
 
           {/* ── Statistik ── */}
           <section>
@@ -234,7 +226,7 @@ export default async function TeacherPage() {
           </section>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 }

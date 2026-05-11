@@ -33,9 +33,9 @@ export default async function StudentEnrollmentsPage() {
   const { enrollments, role } = await getEnrollments();
 
   return (
-    <main className="min-h-screen bg-[var(--base)] px-6 py-10">
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-[40px] border border-[var(--border)] bg-[var(--surface)] p-7 md:p-10">
+    <div className="px-6 py-10">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-[40px] border border-[var(--border)] bg-white p-7 md:p-10 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <h1 className="text-3xl font-black tracking-tight text-[var(--text)] md:text-4xl">
@@ -92,7 +92,7 @@ export default async function StudentEnrollmentsPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, ClipboardList, HelpCircle,
-  PlaySquare, Award, Settings, LogOut,
+  PlaySquare, Award, Settings, LogOut, CheckCircle, Clock
 } from "lucide-react";
+import { IslamicPanel, IslamicCard } from "@/components/ui/IslamicPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -97,7 +98,7 @@ const MOCK_DATA: DashboardData = {
 
 // ─── Nav Config ───────────────────────────────────────────────────────────────
 
-type NavKey = "overview" | "enrollments" | "assignments" | "quizzes" | "certificates" | "materi" | "settings";
+type NavKey = "overview" | "enrollments" | "assignments" | "quizzes" | "certificates" | "materi" | "settings" | "packages";
 
 const NAV_ITEMS: { key: NavKey; label: string; icon: React.ReactNode }[] = [
   { key: "overview",     label: "Overview",    icon: <LayoutDashboard size={16} /> },
@@ -353,11 +354,8 @@ function SettingsPage({ student }: { student: DashboardData["student"] }) {
 
 export default function StudentDashboardClient() {
   const router = useRouter();
-  const [data, setData]           = useState<DashboardData | null>(null);
-  const [loading, setLoading]     = useState(true);
-  const [activeNav, setActiveNav] = useState<NavKey>("overview");
-  const [collapsed, setCollapsed] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
@@ -378,12 +376,19 @@ export default function StudentDashboardClient() {
         const meData = meRes.ok ? await meRes.json() : { user: { name: "Siswa", email: "" } };
         const pkgData = pkgRes.ok ? await pkgRes.json() : null;
 
+        const pkgInfo = pkgData ? {
+          activePackages: pkgData.activePackages ?? [],
+          hasActivePackage: pkgData.hasActivePackage ?? false,
+        } : { activePackages: [], hasActivePackage: false };
+
+        if (!pkgInfo.hasActivePackage) {
+          router.push("/student/packages");
+          return;
+        }
+
         setData({
           student: { name: meData.user?.name ?? "Siswa", email: meData.user?.email ?? "" },
-          packageData: pkgData ? {
-            activePackages: pkgData.activePackages ?? [],
-            hasActivePackage: pkgData.hasActivePackage ?? false,
-          } : undefined,
+          packageData: pkgInfo,
           enrollments: (enrollData.enrollments ?? []).map((e: any) => ({
             id: e.id,
             courseName: e.course?.title ?? "",
@@ -420,14 +425,14 @@ export default function StudentDashboardClient() {
       }
     }
     loadData();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-500 text-sm">Memuat dashboard…</p>
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-[#8B0000] border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 font-medium text-sm">Menyiapkan dashboard…</p>
         </div>
       </div>
     );
@@ -435,141 +440,230 @@ export default function StudentDashboardClient() {
 
   if (!data) return null;
 
-  const pageTitle = NAV_ITEMS.find((n) => n.key === activeNav)?.label ?? "Dashboard";
+  const pendingAssignments = data.assignments.filter(a => a.status === "pending");
+  const activeEnrollments = data.enrollments.filter(e => e.progress < 100);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-
-      {/* ── Sidebar ─────────────────────────────────── */}
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-30 flex flex-col bg-white border-r border-slate-100 shadow-sm
-          transition-all duration-300 ease-in-out
-          ${collapsed ? "w-16" : "w-60"}
-        `}
-      >
-        {/* Header */}
-        <div className={`flex items-center border-b border-slate-100 px-3 py-4 ${collapsed ? "justify-center" : "justify-between px-4"}`}>
-          {!collapsed && (
-            <span className="text-teal-600 font-bold text-base tracking-tight truncate">Haneen Academy</span>
-          )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 transition-colors flex-shrink-0"
-            aria-label="Toggle sidebar"
-          >
-            {collapsed ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"/>
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd"/>
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* Avatar */}
-        <div className={`flex items-center gap-3 border-b border-slate-100 py-4 ${collapsed ? "justify-center px-2" : "px-4"}`}>
-          <div className="w-9 h-9 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            {data.student.name.charAt(0)}
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">{data.student.name}</p>
-              <p className="text-xs text-slate-400 truncate">{data.student.email}</p>
+    <div className="p-6 md:p-10">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Section */}
+        <IslamicPanel variant="navy" className="mb-10 text-white overflow-hidden relative">
+          <div className="relative z-10 py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="inline-block h-1 w-6 rounded-full bg-[#E5B54F]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E5B54F]">Selamat Datang</span>
             </div>
-          )}
-        </div>
+            <h1 className="text-3xl font-black tracking-tight md:text-5xl mb-2">
+              Ahlan wa Sahlan, {data.student.name.split(' ')[0]}! ✨
+            </h1>
+            <p className="text-sm text-white/70 font-medium italic">
+              {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            </p>
+          </div>
+          
+          {/* Decorative Arabic Motif (Optional SVG) */}
+          <div className="absolute top-0 right-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/4">
+             <svg width="300" height="300" viewBox="0 0 100 100" fill="currentColor"><path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" /></svg>
+          </div>
+        </IslamicPanel>
 
-        {/* Nav Links */}
-        <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-          {NAV_ITEMS.map((item) => {
-            const active = activeNav === item.key;
-            return (
-              <button
-                key={item.key}
-                onClick={() => {
-                  if (item.key === "materi") {
-                    router.push("/student/materials");
-                  } else {
-                    setActiveNav(item.key);
-                  }
-                }}
-                title={collapsed ? item.label : undefined}
-                className={`
-                  w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium
-                  transition-all duration-200 ease-in-out
-                  ${collapsed ? "justify-center" : ""}
-                  ${active
-                    ? "bg-blue-50 text-blue-700 shadow-sm"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 hover:translate-x-0.5"}
-                `}
-              >
-                <span className="flex-shrink-0 transition-transform duration-200">{item.icon}</span>
-                {!collapsed && (
-                  <span className="truncate transition-all duration-200">{item.label}</span>
+        {/* Banner Paket */}
+        {data.packageData && (
+          <div className="mb-12">
+            {data.packageData.activePackages.map((pkg) => {
+              const isExpiringSoon = pkg.daysRemaining !== null && pkg.daysRemaining <= 7;
+              return (
+                <div key={pkg.enrollmentId} 
+                  className={`rounded-[40px] border-2 p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl transition-all hover:-translate-y-1 duration-500 ${
+                    isExpiringSoon 
+                    ? 'border-amber-300 bg-gradient-to-br from-amber-50 via-white to-amber-50/30' 
+                    : 'border-[#E5B54F]/30 bg-gradient-to-br from-[#1A2E44] to-[#0F1C2E] text-white'
+                  }`}>
+                  <div className="flex items-center gap-6">
+                    <div className={`flex h-16 w-16 items-center justify-center rounded-3xl text-3xl shadow-xl ${
+                      isExpiringSoon ? 'bg-amber-400 text-white' : 'bg-[#E5B54F] text-[#1A2E44]'
+                    }`}>
+                      {isExpiringSoon ? <Clock size={32} /> : <Award size={32} />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                         <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                           isExpiringSoon ? 'bg-amber-100 text-amber-800' : 'bg-white/10 text-[#E5B54F]'
+                         }`}>Akses VIP Aktif</span>
+                      </div>
+                      <h3 className={`text-2xl font-black ${isExpiringSoon ? 'text-amber-900' : 'text-white'}`}>
+                        Paket {pkg.package.name}
+                      </h3>
+                      <p className={`text-sm mt-1 font-medium ${isExpiringSoon ? 'text-amber-700/80' : 'text-white/60'}`}>
+                        {pkg.expiresAt 
+                          ? `Berlaku hingga: ${new Date(pkg.expiresAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`
+                          : 'Akses tanpa batas (Lifetime Access)'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 w-full md:w-auto">
+                    {pkg.daysRemaining !== null && (
+                      <div className={`px-6 py-3 rounded-2xl text-sm font-black uppercase tracking-widest shadow-xl ${
+                        isExpiringSoon ? 'bg-amber-500 text-white' : 'bg-[#E5B54F] text-[#1A2E44]'
+                      }`}>
+                        {pkg.daysRemaining} Hari Lagi
+                      </div>
+                    )}
+                    <Link href="/student/packages" className={`flex-1 md:flex-none text-center px-6 py-3 rounded-2xl text-sm font-bold transition-all ${
+                      isExpiringSoon ? 'bg-white text-amber-800 border-2 border-amber-200' : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
+                    }`}>
+                      Kelola Paket
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-10">
+            
+            {/* Kursus Aktif */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-400">Kursus Berjalan</h2>
+                <Link href="/student/enrollments" className="text-xs font-bold text-[#8B0000] hover:underline">Lihat Semua</Link>
+              </div>
+              <div className="grid gap-6">
+                {activeEnrollments.length > 0 ? activeEnrollments.slice(0, 3).map((e) => (
+                  <IslamicCard key={e.id} variant="white" className="p-6 transition-all group cursor-pointer" onClick={() => router.push(`/student/enrollments/${e.id}`)}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className="font-black text-slate-800 text-lg group-hover:text-[#1A2E44] transition-colors">{e.courseName}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                           <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center">
+                              <CheckCircle size={12} className="text-emerald-500" />
+                           </div>
+                           <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{e.instructor}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                         <span className="text-xl font-black text-[#1A2E44]">{e.progress}%</span>
+                         <p className="text-[10px] font-bold text-slate-400 uppercase">Selesai</p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-2 shadow-inner">
+                      <div className="h-2 rounded-full bg-gradient-to-r from-[#1A2E44] to-[#E5B54F] transition-all duration-1000 shadow-sm" style={{ width: `${e.progress}%` }} />
+                    </div>
+                  </IslamicCard>
+                )) : (
+                  <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center">
+                    <p className="text-sm text-slate-400">Belum ada kursus yang aktif.</p>
+                  </div>
                 )}
-              </button>
-            );
-          })}
-        </nav>
+              </div>
+            </section>
 
-        {/* Logout */}
-        <div className="px-2 py-3 border-t border-slate-100">
-          <button
-            title={collapsed ? "Keluar" : undefined}
-            onClick={async () => {
-              if (logoutLoading) return;
-              if (!confirm("Yakin ingin keluar?")) return;
-              setLogoutLoading(true);
-              try {
-                const res = await fetch("/api/auth/logout", {
-                  method: "POST",
-                  credentials: "include",
-                });
-                if (res.ok) {
-                  router.push("/login");
-                  router.refresh();
-                } else {
-                  alert("Logout gagal. Silakan coba lagi.");
-                }
-              } catch {
-                alert("Logout gagal. Silakan coba lagi.");
-              } finally {
-                setLogoutLoading(false);
-              }
-            }}
-            disabled={logoutLoading}
-            className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-500 hover:bg-rose-50 transition-colors ${collapsed ? "justify-center" : ""}`}
-          >
-            <span className="text-lg flex-shrink-0">🚪</span>
-            {!collapsed && <span>{logoutLoading ? "Keluar..." : "Keluar"}</span>}
-          </button>
+            {/* Tugas Pending */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-400">Tugas & Deadline</h2>
+                <Link href="/student/assignments" className="text-xs font-bold text-[#8B0000] hover:underline">Lihat Semua</Link>
+              </div>
+              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
+                {pendingAssignments.length > 0 ? pendingAssignments.slice(0, 4).map((a) => (
+                  <Link key={a.id} href={`/student/assignments/${a.id}`}
+                    className="flex items-center justify-between px-6 py-5 hover:bg-red-50/30 transition-colors group">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 font-bold text-lg shadow-inner">
+                        !
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-800 text-sm group-hover:text-[#8B0000] transition-colors">{a.title}</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">{a.courseName} · <span className="text-rose-500 font-semibold">{a.dueDate}</span></p>
+                      </div>
+                    </div>
+                    <StatusBadge status={a.status} />
+                  </Link>
+                )) : (
+                  <div className="p-10 text-center">
+                    <p className="text-sm text-slate-400">Semua tugas sudah dikerjakan! 🎉</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar Column */}
+          <div className="space-y-10">
+            
+            {/* Quick Stats */}
+            <section>
+              <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-400 mb-4">Statistik</h2>
+              <div className="grid gap-4">
+                <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                    <BookOpen size={20} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-black text-slate-800">{data.enrollments.length}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">Total Kursus</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <Award size={20} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-black text-slate-800">{data.certificates.length}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">Sertifikat</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Sertifikat Terbaru */}
+            {data.certificates.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-400">Pencapaian Sertifikat</h2>
+                  <Link href="/student/certificates" className="text-xs font-bold text-[#E5B54F] hover:underline">Semua</Link>
+                </div>
+                <div className="space-y-4">
+                  {data.certificates.slice(0, 2).map((c) => (
+                    <div key={c.id} className="bg-gradient-to-br from-[#FCFBF7] to-white border border-[#E5B54F]/20 rounded-[24px] p-5 flex items-center gap-5 shadow-sm group hover:shadow-md transition-all">
+                      <div className="h-14 w-14 bg-[#F9F6EE] rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform shadow-inner">
+                        🏅
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-black text-[#1A2E44] text-sm truncate">{c.courseName}</p>
+                        <p className="text-[10px] font-bold text-[#E5B54F] uppercase tracking-wider mt-1">Lulus: {new Date(c.issuedAt).toLocaleDateString("id-ID")}</p>
+                      </div>
+                      {c.downloadUrl && (
+                        <a href={c.downloadUrl} className="h-10 w-10 rounded-xl bg-[#1A2E44] text-white flex items-center justify-center hover:bg-[#E5B54F] transition-colors shadow-lg shadow-[#1A2E44]/10">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Bantuan Card */}
+            <IslamicPanel variant="navy" className="p-8 text-white relative group overflow-hidden">
+              <div className="relative z-10">
+                <h3 className="text-xl font-black mb-3">Butuh Bantuan?</h3>
+                <p className="text-xs text-white/60 leading-relaxed mb-6">Ustadz dan tim admin kami siap membantu kendala belajar Anda kapan pun.</p>
+                <a href="https://wa.me/6285704833249" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 w-full bg-[#E5B54F] text-[#1A2E44] font-black text-xs py-4 rounded-2xl hover:bg-white transition-all shadow-xl">
+                   <span>Hubungi via WhatsApp</span>
+                </a>
+              </div>
+              <div className="absolute -bottom-4 -right-4 text-white opacity-5 pointer-events-none">
+                 <HelpCircle size={100} />
+              </div>
+            </IslamicPanel>
+
+          </div>
         </div>
-      </aside>
-
-      {/* ── Main ────────────────────────────────────── */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${collapsed ? "ml-16" : "ml-60"}`}>
-
-        {/* Topbar */}
-        <header className="sticky top-0 z-20 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between shadow-sm">
-          <h1 className="text-lg font-bold text-slate-800">{pageTitle}</h1>
-          <span className="text-sm text-slate-400 hidden sm:block">
-            {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-          </span>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 p-6">
-          {activeNav === "overview"     && <OverviewPage data={data} />}
-          {activeNav === "enrollments"  && <EnrollmentsPage enrollments={data.enrollments} />}
-          {activeNav === "assignments"  && <AssignmentsPage assignments={data.assignments} />}
-          {activeNav === "quizzes"      && <QuizzesPage quizzes={data.quizzes} />}
-          {activeNav === "certificates" && <CertificatesPage certificates={data.certificates} />}
-          {activeNav === "settings"     && <SettingsPage student={data.student} />}
-        </main>
       </div>
     </div>
   );

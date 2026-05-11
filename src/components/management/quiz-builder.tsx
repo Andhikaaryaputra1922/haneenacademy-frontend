@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Plus, Save, Trash2 } from "lucide-react";
+import { ArrowUpRight, Plus, Save, Sparkles, Trash2 } from "lucide-react";
 
 type QuizQuestion = {
   id: string;
@@ -43,6 +43,8 @@ export function QuizBuilder({ quiz }: Props) {
   const [isRandomized, setIsRandomized] = useState(quiz.isRandomized);
   const [timeLimit, setTimeLimit] = useState<string>(quiz.timeLimit ? String(quiz.timeLimit) : "");
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const [qText, setQText] = useState("");
@@ -142,6 +144,63 @@ export function QuizBuilder({ quiz }: Props) {
     }
   };
 
+  const generateWithAI = async () => {
+    if (!aiPrompt.trim()) return;
+    setIsGeneratingAI(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/quizzes/generate-ai`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          context: {
+            title,
+            description,
+            existingQuestions: sortedQuestions.map((q) => q.question),
+          },
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.message || "Gagal generate soal dengan AI");
+        return;
+      }
+
+      const generatedQuestions = data.questions;
+      if (!Array.isArray(generatedQuestions)) {
+        setError("Format respons AI tidak valid");
+        return;
+      }
+
+      // We add them one by one for simplicity given current backend routes
+      for (const q of generatedQuestions) {
+        await fetch(`/api/quizzes/${quiz.id}/questions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            question: q.question,
+            type: q.type,
+            points: q.points || 1,
+            optionsJson: q.optionsJson,
+            correctAnswer: q.correctAnswer,
+          }),
+        });
+      }
+
+      setAiPrompt("");
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setError("Terjadi kesalahan saat menghubungi AI.");
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
@@ -224,6 +283,40 @@ export function QuizBuilder({ quiz }: Props) {
             <ArrowUpRight size={18} />
           </span>
         </button>
+      </div>
+
+      <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-[var(--accent)] text-[var(--text)]">
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <p className="text-lg font-black tracking-tight text-[var(--text)]">AI Question Generator</p>
+            <p className="text-sm text-[var(--muted)]">Generate soal otomatis menggunakan AI.</p>
+          </div>
+        </div>
+        
+        <div className="mt-5">
+          <label className="block">
+            <span className="mb-2 block text-xs font-semibold text-[var(--muted)]">Prompt AI (Topik atau deskripsi materi)</span>
+            <textarea
+              className="min-h-24 w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none focus:border-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/15"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="Contoh: Buat 5 soal pilihan ganda tentang sejarah Indonesia untuk kelas 10."
+            />
+          </label>
+
+          <button
+            type="button"
+            onClick={generateWithAI}
+            disabled={isGeneratingAI || !aiPrompt.trim()}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-black/90 disabled:opacity-60"
+          >
+            <Sparkles size={18} />
+            {isGeneratingAI ? "Sedang men-generate…" : "Generate Soal AI"}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">

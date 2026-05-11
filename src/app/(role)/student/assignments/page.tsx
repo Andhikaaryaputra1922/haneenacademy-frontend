@@ -53,8 +53,8 @@ export default async function AssignmentsPage() {
   const assignments = await getAssignments();
 
   return (
-    <div className="min-h-screen bg-[var(--base)] px-6 py-10">
-      <div className="mx-auto max-w-3xl space-y-6">
+    <div className="px-6 py-10">
+      <div className="mx-auto max-w-4xl space-y-6">
         <BackButton />
 
         <div className="flex items-center justify-between">

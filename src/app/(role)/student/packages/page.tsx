@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import BackButton from "@/components/BackButton";
+import { useRouter } from "next/navigation";
 
 interface StorePackage {
   id: string;
@@ -24,12 +24,14 @@ interface StorePackage {
 export default function PackageStorePage() {
   const [packages, setPackages] = useState<StorePackage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/packages/store", { credentials: "include" })
       .then((res) => res.json())
-      .then((data) => setPackages(data.packages || []))
+      .then((storeData) => {
+        setPackages(storeData.packages || []);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -37,153 +39,140 @@ export default function PackageStorePage() {
   const formatPrice = (p: number) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(p);
 
-  const handleBuy = async (pkgId: string) => {
-    setPurchasing(pkgId);
-    try {
-      const res = await fetch("/api/payments/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId: pkgId }),
-      });
-      const data = await res.json();
-      
-      if (!res.ok) {
-        alert(data.message || "Gagal membuat transaksi");
-        return;
-      }
-
-      // Pastikan Snap Midtrans sudah dimuat di layout utama
-      if (typeof window !== "undefined" && (window as any).snap) {
-        (window as any).snap.pay(data.token, {
-          onSuccess: function (result: any) {
-            alert("Pembayaran berhasil! Anda akan segera diarahkan ke Dashboard.");
-            window.location.href = "/student";
-          },
-          onPending: function (result: any) {
-            alert("Menunggu pembayaran Anda.");
-          },
-          onError: function (result: any) {
-            alert("Pembayaran gagal. Silakan coba lagi.");
-          },
-          onClose: function () {
-            console.log("Pop up ditutup");
-          }
-        });
-      } else {
-        alert("Sistem pembayaran belum siap. Silakan refresh halaman.");
-      }
-    } catch (err) {
-      alert("Error memproses pembelian.");
-    } finally {
-      setPurchasing(null);
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-[var(--base)] px-6 py-10">
-      <div className="mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <BackButton />
-              <Link href="/student" className="text-sm font-semibold text-[var(--muted)] hover:text-[var(--text)] transition-colors">
-                Kembali ke Dashboard
-              </Link>
-            </div>
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-[var(--text)] md:text-5xl">
-              Pilih Paket Belajarmu
-            </h1>
-            <p className="mt-3 max-w-2xl text-base text-[var(--muted)]">
-              Dapatkan akses ke materi premium kami dengan harga terbaik. Pembayaran instan melalui QRIS, Transfer Bank, dan lainnya.
-            </p>
+    <main className="min-h-screen bg-slate-50 pb-20">
+      {/* Banner Section */}
+      <div className="w-full bg-[#1A2E44] px-4 py-20 text-center text-white relative overflow-hidden">
+        {/* Islamic Motif Background */}
+        <div className="absolute inset-0 opacity-10 flex justify-center items-center pointer-events-none scale-150">
+          <svg className="w-[800px] h-[800px]" fill="#E5B54F" viewBox="0 0 100 100">
+            <path d="M50 0 L60 40 L100 50 L60 60 L50 100 L40 60 L0 50 L40 40 Z" />
+          </svg>
+        </div>
+        
+        <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center justify-center">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px w-8 bg-[#E5B54F]" />
+            <p className="text-xs font-black tracking-[0.4em] uppercase text-[#E5B54F]">Program Unggulan</p>
+            <div className="h-px w-8 bg-[#E5B54F]" />
           </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6">
+             AKSELERASI <span className="text-[#E5B54F]">UTBK & TKA</span>
+          </h1>
+          <p className="text-lg md:text-xl font-medium mb-10 max-w-2xl text-white/70 leading-relaxed">
+            Kurikulum terintegrasi Haneen Academy untuk memaksimalkan peluang kelulusan Anda di PTN Impian.
+          </p>
+          <div className="inline-block bg-[#E5B54F] text-[#1A2E44] px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-[#E5B54F]/20 hover:scale-105 transition-transform cursor-default">
+            Diskon Spesial Terbatas! 🌙
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 mt-12">
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+             <div className="h-8 w-1 bg-[#1A2E44] rounded-full" />
+             <h2 className="text-2xl font-black text-slate-800">Paket Belajar Terbaik</h2>
+          </div>
+          <button className="text-sm font-bold text-[#1A2E44] hover:text-[#E5B54F] flex items-center gap-1 group transition-colors">
+            Lihat Semua
+            <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path></svg>
+          </button>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-[400px] animate-pulse rounded-3xl border border-[var(--border)] bg-[var(--surface)]" />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-[450px] animate-pulse rounded-2xl border border-slate-200 bg-white" />
             ))}
           </div>
         )}
 
-        {/* Packages Grid */}
+        {/* Empty State */}
         {!loading && packages.length === 0 && (
-          <div className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-12 text-center">
-            <h3 className="text-xl font-bold text-[var(--text)]">Belum ada paket</h3>
-            <p className="mt-2 text-[var(--muted)]">Saat ini belum ada paket yang tersedia untuk dibeli.</p>
+          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
+            <h3 className="text-xl font-bold text-slate-800">Belum ada paket</h3>
+            <p className="mt-2 text-slate-500">Saat ini belum ada paket yang tersedia untuk dibeli.</p>
           </div>
         )}
 
+        {/* Packages Grid */}
         {!loading && packages.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {packages.map((pkg) => {
               const isFree = pkg.price === 0;
+              // Simulate discount percentage and original price for UI
+              const discountPercent = 75;
+              const originalPrice = isFree ? 0 : pkg.price * (100 / (100 - discountPercent));
+
+              // Sum of all lessons across courses
+              const totalLessons = pkg.packageCourses.reduce((acc, pc) => {
+                // If we don't have exact lesson counts here, we just use a placeholder text or default limit
+                return acc + (pc.lessonLimit ?? pkg.defaultLessonLimit);
+              }, 0) || 7;
+
               return (
-                <div key={pkg.id} className="relative flex flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 md:p-8 shadow-sm hover:shadow-xl transition-all hover:-translate-y-1">
+                <div key={pkg.id} className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200 hover:shadow-xl transition-all">
                   
-                  {/* Badge */}
-                  {pkg.name.toLowerCase().includes("pro") || pkg.name.toLowerCase().includes("premium") ? (
-                    <div className="absolute right-0 top-0 rounded-bl-2xl bg-gradient-to-tr from-amber-400 to-amber-300 px-4 py-2 font-black text-amber-950 text-xs shadow-sm">
-                      POPULER
+                  {/* Card Header Section */}
+                  <div className="bg-[#1A2E44] p-8 text-center text-white relative">
+                    <h3 className="text-3xl font-black italic tracking-tighter text-white/5 absolute -right-2 -top-2 select-none pointer-events-none uppercase">PROMO</h3>
+                    <div className="relative z-10 flex flex-col items-center">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E5B54F] mb-2">Exclusive Access</p>
+                      <h4 className="text-xl font-black uppercase leading-tight mb-3 tracking-tighter">{pkg.name}</h4>
+                      <div className="inline-block bg-[#E5B54F] text-[#1A2E44] px-4 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest shadow-lg">
+                        Premium Bundle
+                      </div>
                     </div>
-                  ) : null}
-
-                  <h3 className="text-2xl font-black text-[var(--text)]">{pkg.name}</h3>
-                  <p className="mt-2 text-sm text-[var(--muted)]">{pkg.description || "Akses ke modul-modul pembelajaran komprehensif."}</p>
-                  
-                  <div className="mt-6 flex items-baseline gap-1">
-                    <span className="text-4xl font-black tracking-tight text-[var(--text)]">
-                      {isFree ? "Gratis" : formatPrice(pkg.price)}
-                    </span>
-                    {!isFree && <span className="text-sm font-medium text-[var(--muted)]">/paket</span>}
                   </div>
 
-                  <div className="my-8 h-px w-full bg-[var(--border)]" />
+                  {/* Bottom White Section */}
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-700">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        {totalLessons} Materi
+                      </span>
+                    </div>
 
-                  <div className="mb-8 flex-1">
-                    <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[var(--muted)]">TERMASUK</p>
-                    <ul className="space-y-4">
-                      {/* Default limit */}
-                      <li className="flex items-start gap-3 text-sm text-[var(--text)] font-medium">
-                        <svg className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span>{pkg.defaultLessonLimit <= 0 ? "Akses materi tak terbatas" : `Batas ${pkg.defaultLessonLimit} materi per kelas`}</span>
-                      </li>
-                      
-                      {/* Courses count */}
-                      <li className="flex items-start gap-3 text-sm text-[var(--text)] font-medium">
-                        <svg className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span>Akses penuh ke {pkg.packageCourses.length} Kelas Pembelajaran</span>
-                      </li>
+                    <h3 className="text-sm font-bold text-slate-800 uppercase mb-2 line-clamp-2">
+                      {pkg.name} (KELAS & TRYOUT)
+                    </h3>
+                    <p className="text-xs text-slate-500 line-clamp-3 mb-6 flex-1">
+                      {pkg.description || `Paket ini khusus untuk pendaftar program ${pkg.name}.`}
+                    </p>
 
-                      {/* Map top 3 courses */}
-                      {pkg.packageCourses.slice(0, 3).map(pc => (
-                        <li key={pc.course.id} className="flex items-start gap-3 text-sm text-[var(--muted)] pl-7">
-                          <span className="h-1.5 w-1.5 mt-2 shrink-0 rounded-full bg-[var(--border)]" />
-                          <span className="line-clamp-1">{pc.course.title}</span>
-                        </li>
-                      ))}
-                      {pkg.packageCourses.length > 3 && (
-                        <li className="text-xs font-semibold text-[var(--primary)] pl-7">
-                          + {pkg.packageCourses.length - 3} kelas lainnya
-                        </li>
+                    <div className="mt-auto">
+                      {isFree ? (
+                        <div className="flex items-end justify-end mb-6">
+                          <span className="text-2xl font-black text-[#1A2E44]">Gratis ✨</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex flex-col">
+                            <span className="inline-block bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold self-start mb-1">
+                              {discountPercent}%
+                            </span>
+                            <span className="text-xs text-slate-400 line-through font-medium">
+                              {formatPrice(originalPrice)}
+                            </span>
+                          </div>
+                          <span className="text-2xl font-black text-[#1A2E44]">
+                            {formatPrice(pkg.price)}
+                          </span>
+                        </div>
                       )}
-                    </ul>
+
+                      <button
+                        onClick={() => router.push(`/student/packages/${pkg.id}`)}
+                        className="w-full rounded-2xl bg-[#1A2E44] hover:bg-[#E5B54F] hover:text-[#1A2E44] py-4 text-xs font-black uppercase tracking-widest text-white transition-all shadow-xl shadow-[#1A2E44]/10 active:scale-[0.98]"
+                      >
+                        Pesan Sekarang
+                      </button>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => handleBuy(pkg.id)}
-                    disabled={purchasing === pkg.id}
-                    className={`w-full rounded-2xl py-4 text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-[var(--primary)]/20 disabled:opacity-50
-                      ${purchasing === pkg.id || pkg.name.toLowerCase().includes("pro")
-                        ? "bg-[var(--primary)] text-[var(--primary-ink)] hover:bg-[var(--primary)]/90" 
-                        : "bg-[var(--base)] border border-[var(--border)] text-[var(--text)] hover:bg-black/5 dark:hover:bg-white/5"}
-                    `}
-                  >
-                    {purchasing === pkg.id ? "Memproses..." : isFree ? "Dapatkan Gratis" : "Beli Sekarang"}
-                  </button>
                 </div>
               );
             })}
