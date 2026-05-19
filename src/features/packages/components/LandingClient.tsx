@@ -50,8 +50,7 @@ export default function LandingClient() {
     <main className="min-h-screen overflow-x-hidden selection:bg-[#D4AF37]/30 selection:text-[#0B213F]" style={{ fontFamily: "'DM Sans', sans-serif", background: "#061224", color: "#FAF9F6" }}>
       
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&display=swap');
-        * { font-family: 'DM Sans', sans-serif !important; }
+        * { font-family: var(--font-plus-jakarta), sans-serif !important; }
         
         .nav-link { position:relative; }
         .nav-link::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:#D4AF37; border-radius:9px; transition:width .3s ease; }
@@ -64,6 +63,7 @@ export default function LandingClient() {
           border: 1px solid rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
+          will-change: transform, opacity;
         }
 
         .gold-gradient-text {
@@ -79,7 +79,7 @@ export default function LandingClient() {
       ══════════════════════════════════ */}
       <nav className={`fixed top-0 z-[100] w-full transition-all duration-500 ${scrolled ? "h-16 bg-[#061224]/80 backdrop-blur-md border-b border-white/5" : "h-24 bg-transparent"}`}>
         <Link href="/" className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-[110]">
-          <img src="/images/logo.svg" alt="Logo" className="h-64 w-auto object-contain brightness-0 invert" />
+          <img src="/images/logo.svg" alt="Logo" className="h-8 md:h-10 w-auto object-contain brightness-0 invert" />
         </Link>
         <div className="hidden items-center gap-10 lg:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
           {["Program", "Metodologi", "Galeri", "Testimoni"].map((item) => (
