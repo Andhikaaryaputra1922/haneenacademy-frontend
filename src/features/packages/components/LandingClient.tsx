@@ -150,7 +150,7 @@ export default function LandingClient() {
 
           {/* Stats row */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.65 }}
-            className="flex items-center gap-10 border-t border-white/10 pt-10">
+            className="flex items-center gap-10 pt-10">
             {[["4k+", "Alumni Sukses"], ["50+", "Mentor Ahli"], ["4.9", "Rating Bintang"]].map(([val, lbl]) => (
               <div key={lbl} className="text-center">
                 <p className="text-3xl font-black text-white">{val}<span className="text-[#D4AF37]">★</span></p>
