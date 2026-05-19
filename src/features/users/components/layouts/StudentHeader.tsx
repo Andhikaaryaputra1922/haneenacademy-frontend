@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { LogOut, User, ShoppingCart, BookOpen, LayoutGrid } from "lucide-react";
+import { LogOut, User, ShoppingCart, BookOpen, LayoutGrid, Menu } from "lucide-react";
 import { PremiumModal } from "@/shared/components/ui/PremiumFeedback";
 
 interface Props {
@@ -18,7 +18,14 @@ export default function StudentHeader({ name }: Props) {
 
         {/* Breadcrumb or Welcome */}
         <div className="flex items-center gap-3">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Student <span className="text-slate-200 dark:text-white/10 mx-2">/</span> <span className="text-[#0B213F] dark:text-[#D4AF37]">Dashboard</span></p>
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-sidebar"))}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-100 dark:border-white/10 text-[#0B213F] dark:text-white lg:hidden hover:bg-slate-50 dark:hover:bg-white/5 transition-colors mr-1 shadow-sm"
+            aria-label="Toggle Menu"
+          >
+            <Menu size={18} />
+          </button>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hidden sm:block">Student <span className="text-slate-200 dark:text-white/10 mx-2">/</span> <span className="text-[#0B213F] dark:text-[#D4AF37]">Dashboard</span></p>
         </div>
 
         {/* Right Actions */}

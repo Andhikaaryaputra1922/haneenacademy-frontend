@@ -44,6 +44,7 @@ export default function BaseSidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
@@ -56,7 +57,22 @@ export default function BaseSidebar({
     return () => clearInterval(timer);
   }, []);
 
-  const W = collapsed ? 72 : 220;
+  useEffect(() => {
+    const handleToggle = () => setMobileOpen(prev => !prev);
+    const handleClose = () => setMobileOpen(false);
+    window.addEventListener("toggle-sidebar", handleToggle);
+    window.addEventListener("close-sidebar", handleClose);
+    return () => {
+      window.removeEventListener("toggle-sidebar", handleToggle);
+      window.removeEventListener("close-sidebar", handleClose);
+    };
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const W = mobileOpen ? 220 : (collapsed ? 72 : 220);
 
   const handleLogout = async () => {
     setLogoutLoading(true);
@@ -87,10 +103,22 @@ export default function BaseSidebar({
         loading={logoutLoading}
       />
 
+      {/* ── Mobile Backdrop Overlay ── */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
+        />
+      )}
+
       {/* ── Sidebar ── */}
       <aside
-        style={{ width: `${W}px`, transition: "width 0.3s ease" }}
-        className="fixed left-0 top-0 z-30 flex h-screen flex-col bg-[#0B213F] overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.15)] border-r border-white/5"
+        style={{ width: `${W}px` }}
+        className={`
+          fixed left-0 top-0 z-50 flex h-screen flex-col bg-[#0B213F] overflow-hidden shadow-[4px_0_24px_rgba(0,0,0,0.15)] border-r border-white/5
+          transition-all duration-300 ease-in-out
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
       >
         {/* ── Logo ── */}
         <div className={`flex h-24 shrink-0 items-center justify-center overflow-hidden border-b border-white/5 ${collapsed ? "px-2" : "px-0"}`}>
@@ -259,7 +287,7 @@ export default function BaseSidebar({
         {/* ── Collapse toggle ── */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="absolute -right-3.5 top-[84px] flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#0B213F] text-white/50 hover:bg-[#D4AF37] hover:text-[#0B213F] hover:border-transparent transition-all z-[100] shadow-lg"
+          className="absolute -right-3.5 top-[84px] hidden lg:flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#0B213F] text-white/50 hover:bg-[#D4AF37] hover:text-[#0B213F] hover:border-transparent transition-all z-[100] shadow-lg"
           style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))" }}
         >
           {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
