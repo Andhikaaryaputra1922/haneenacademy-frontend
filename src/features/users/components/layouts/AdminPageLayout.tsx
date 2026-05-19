@@ -75,10 +75,11 @@ export default function AdminPageLayout({
               <p className="mt-0.5 text-sm text-slate-400">{subtitle}</p>
             )}
           </div>
+        </div>
 
-          {/* Action */}
-          {action && <div className="shrink-0">{action}</div>}
-        </header>
+        {/* Action */}
+        {action && <div className="shrink-0">{action}</div>}
+      </header>
 
         {/* ── Page Content ── */}
         <div>{children}</div>
