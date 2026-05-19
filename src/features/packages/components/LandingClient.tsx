@@ -36,14 +36,9 @@ export default function LandingClient() {
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   
-  const rawY = useTransform(heroScroll, [0, 1], [0, 120]);
-  const rawScale = useTransform(heroScroll, [0, 1], [1, 1.05]);
-  const rawRotateX = useTransform(heroScroll, [0, 1], [8, 0]);
-
-  const springConfig = { stiffness: 90, damping: 25, mass: 0.2 };
+  const rawY = useTransform(heroScroll, [0, 1], [0, 80]);
+  const springConfig = { stiffness: 100, damping: 30, mass: 0.1 };
   const heroY = useSpring(rawY, springConfig);
-  const videoScale = useSpring(rawScale, springConfig);
-  const videoRotateX = useSpring(rawRotateX, springConfig);
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
 
   useEffect(() => {
@@ -156,13 +151,13 @@ export default function LandingClient() {
 
         {/* 3D Video / Dashboard Preview */}
         <motion.div 
-          style={{ scale: videoScale, rotateX: videoRotateX, perspective: 1000 }}
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.5, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ y: heroY }}
+          initial={{ opacity: 0, scale: 0.98, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-20 mt-20 w-full max-w-[1400px] px-6 lg:px-12"
         >
-          <div className="relative rounded-[2.5rem] overflow-hidden glass-panel p-2 shadow-[0_40px_100px_rgba(0,0,0,0.5)] border border-white/10 ring-1 ring-white/5" style={{ transformStyle: "preserve-3d" }}>
+          <div className="relative rounded-[2.5rem] overflow-hidden glass-panel p-2 shadow-[0_40px_100px_rgba(0,0,0,0.5)] border border-white/10 ring-1 ring-white/5">
             <div className="absolute inset-0 bg-gradient-to-tr from-[#D4AF37]/10 via-transparent to-[#1a3a6e]/20 opacity-50 mix-blend-overlay" />
             <img src="/images/hero_premium.png" onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2000&auto=format")} alt="Platform Preview" className="w-full h-auto rounded-[2rem] object-cover opacity-90" />
 
