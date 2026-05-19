@@ -168,50 +168,85 @@ export default function StudentAttendanceClient({ initialSessions, initialHistor
            <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">Riwayat Presensi Saya</h2>
         </div>
 
-        <div className="bg-white rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-100">
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Sesi / Topik</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Mata Kuliah</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Waktu Presensi</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {history.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-8 py-20 text-center text-slate-300 font-bold uppercase tracking-widest text-[10px]">Belum ada riwayat presensi</td>
-                  </tr>
-                ) : (
-                  history.map((h) => (
-                    <tr key={h.id} className="hover:bg-slate-50/50 transition-colors group">
-                      <td className="px-8 py-6">
-                         <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{h.schedule?.topic || "Live Session"}</p>
-                         <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest">{h.schedule?.date ? new Date(h.schedule.date).toLocaleDateString() : "-"}</p>
-                      </td>
-                      <td className="px-8 py-6">
-                         <span className="text-xs font-bold text-slate-600">{h.course.title}</span>
-                      </td>
-                      <td className="px-8 py-6">
-                         <span className="text-[10px] font-bold text-slate-400 uppercase">{new Date(h.checkedAt).toLocaleString('id-ID', { hour:'2-digit', minute:'2-digit', day:'numeric', month:'short' })}</span>
-                      </td>
-                      <td className="px-8 py-6">
-                         <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                            h.status === 'HADIR' ? "bg-emerald-50 text-emerald-600" :
-                            h.status === 'IZIN' ? "bg-amber-50 text-amber-600" :
-                            "bg-slate-100 text-slate-400"
-                         }`}>
-                           {h.status}
-                         </span>
-                      </td>
+        <div className="bg-white rounded-[24px] md:rounded-[40px] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
+          {history.length === 0 ? (
+            <div className="p-12 text-center text-slate-300 font-bold uppercase tracking-widest text-[10px]">
+              Belum ada riwayat presensi
+            </div>
+          ) : (
+            <>
+              {/* Desktop View Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100">
+                      <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Sesi / Topik</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Mata Pelajaran</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Waktu Presensi</th>
+                      <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {history.map((h) => (
+                      <tr key={h.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="px-8 py-6">
+                           <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{h.schedule?.topic || "Live Session"}</p>
+                           <p className="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-widest">{h.schedule?.date ? new Date(h.schedule.date).toLocaleDateString() : "-"}</p>
+                        </td>
+                        <td className="px-8 py-6">
+                           <span className="text-xs font-bold text-slate-600">{h.course.title}</span>
+                        </td>
+                        <td className="px-8 py-6">
+                           <span className="text-[10px] font-bold text-slate-400 uppercase">{new Date(h.checkedAt).toLocaleString('id-ID', { hour:'2-digit', minute:'2-digit', day:'numeric', month:'short' })}</span>
+                        </td>
+                        <td className="px-8 py-6">
+                           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                              h.status === 'HADIR' ? "bg-emerald-50 text-emerald-600" :
+                              h.status === 'IZIN' ? "bg-amber-50 text-amber-600" :
+                              "bg-slate-100 text-slate-400"
+                           }`}>
+                             {h.status}
+                           </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile View Cards */}
+              <div className="block md:hidden divide-y divide-slate-100">
+                {history.map((h) => (
+                  <div key={h.id} className="p-5 space-y-3">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-[#0B213F] uppercase tracking-tight truncate">{h.schedule?.topic || "Live Session"}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase mt-0.5 truncate">{h.course.title}</p>
+                      </div>
+                      <span className={`shrink-0 px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                         h.status === 'HADIR' ? "bg-emerald-50 text-emerald-600" :
+                         h.status === 'IZIN' ? "bg-amber-50 text-amber-600" :
+                         "bg-slate-100 text-slate-400"
+                      }`}>
+                        {h.status}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1 text-[9px] text-slate-400 font-bold uppercase tracking-wider border-t border-slate-50 pt-2">
+                      <div className="flex justify-between">
+                        <span>Tanggal Kelas:</span>
+                        <span className="text-slate-600">{h.schedule?.date ? new Date(h.schedule.date).toLocaleDateString() : "-"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Waktu Absen:</span>
+                        <span className="text-slate-600">{new Date(h.checkedAt).toLocaleString('id-ID', { hour:'2-digit', minute:'2-digit', day:'numeric', month:'short' })}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
     </div>

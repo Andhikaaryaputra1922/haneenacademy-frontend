@@ -124,60 +124,60 @@ export default function StudentSchedulesPage() {
                   {/* Decorative Gradient Background */}
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-slate-50 to-transparent -mr-32 -mt-32 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                    <div className="flex items-start md:items-center gap-6">
-                      <div className={`h-20 w-20 shrink-0 rounded-[28px] flex flex-col items-center justify-center transition-all duration-500 ${expired ? "bg-slate-100 text-slate-400" : "bg-[#0B213F]/5 text-[#0B213F] group-hover:bg-[#0B213F] group-hover:text-white"}`}>
-                        <Calendar size={24} strokeWidth={3} />
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-start md:items-center gap-4">
+                      <div className={`h-14 w-14 md:h-20 md:w-20 shrink-0 rounded-[20px] md:rounded-[28px] flex flex-col items-center justify-center transition-all duration-500 ${expired ? "bg-slate-100 text-slate-400" : "bg-[#0B213F]/5 text-[#0B213F] group-hover:bg-[#0B213F] group-hover:text-white"}`}>
+                        <Calendar className="h-5 w-5 md:h-6 md:w-6" strokeWidth={3} />
                       </div>
                       
                       <div>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <h3 className="text-xl font-black text-[#0B213F] uppercase tracking-tight leading-none group-hover:text-[#D4AF37] transition-colors">{s.course.title}</h3>
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <h3 className="text-base md:text-xl font-black text-[#0B213F] uppercase tracking-tight leading-tight group-hover:text-[#D4AF37] transition-colors">{s.course.title}</h3>
                           {s.batch && (
-                            <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-widest">
+                            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[8px] font-black uppercase tracking-widest">
                               {s.batch.name}
                             </span>
                           )}
-                          {expired && <span className="text-[9px] font-black bg-slate-100 text-slate-400 px-3 py-1 rounded-full uppercase tracking-widest">Selesai</span>}
+                          {expired && <span className="text-[8px] font-black bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full uppercase tracking-widest">Selesai</span>}
                         </div>
 
                         {s.topic && (
-                          <p className="mt-1 text-sm font-bold text-slate-600 line-clamp-1">{s.topic}</p>
+                          <p className="mt-1 text-xs md:text-sm font-bold text-slate-600 line-clamp-1">{s.topic}</p>
                         )}
 
-                        <div className="flex flex-wrap items-center gap-y-2 gap-x-5 mt-4">
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                            <User size={14} className="text-[#D4AF37]" /> 
+                        <div className="flex flex-wrap items-center gap-y-1.5 gap-x-4 mt-3">
+                          <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                            <User size={12} className="text-[#D4AF37]" /> 
                             {s.course.teachers.map(t => t.name).join(", ") || "Guru Pengampu"}
                           </div>
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                            <Calendar size={14} className="text-[#D4AF37]" /> 
-                            {new Date(s.date).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                          <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                            <Calendar size={12} className="text-[#D4AF37]" /> 
+                            {new Date(s.date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' })}
                           </div>
-                          <div className="flex items-center gap-2 text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                            <Clock size={14} className="text-[#D4AF37]" /> 
+                          <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                            <Clock size={12} className="text-[#D4AF37]" /> 
                             {s.startTime} - {s.endTime}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="shrink-0 flex items-center gap-3">
+                    <div className="shrink-0 w-full md:w-auto flex items-center gap-3">
                       {s.meetingLink ? (
                         <a
                           href={expired ? "#" : s.meetingLink}
                           target={expired ? "_self" : "_blank"}
                           rel="noopener noreferrer"
-                          className={`flex items-center gap-3 px-8 py-4 rounded-[24px] font-black text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 ${
+                          className={`flex w-full md:w-auto items-center justify-center gap-3 px-6 py-3.5 rounded-[20px] font-black text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 ${
                             expired 
                               ? "bg-slate-100 text-slate-300 cursor-not-allowed shadow-none" 
                               : "bg-[#0B213F] text-white hover:bg-[#8B0000] shadow-[#0B213F]/10 hover:shadow-[#8B0000]/20"
                           }`}
                         >
-                          <Link2 size={18} strokeWidth={3} /> {expired ? "Sesi Berakhir" : "Masuk Kelas"}
+                          <Link2 size={16} strokeWidth={3} /> {expired ? "Sesi Berakhir" : "Masuk Kelas"}
                         </a>
                       ) : (
-                        <div className="px-6 py-4 rounded-[24px] bg-slate-50 border border-slate-100 text-slate-300 text-[10px] font-black uppercase tracking-widest">
+                        <div className="w-full md:w-auto px-6 py-3.5 rounded-[20px] bg-slate-50 border border-slate-100 text-slate-300 text-[10px] font-black uppercase tracking-widest text-center">
                           Link Belum Tersedia
                         </div>
                       )}

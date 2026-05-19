@@ -98,27 +98,27 @@ export default async function AssignmentsPage() {
               <Link
                 key={a.id}
                 href={`/student/assignments/${a.id}`}
-                className="flex items-center justify-between px-7 py-5 hover:bg-black/5 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-5 hover:bg-slate-50 transition-colors"
               >
                 <div className="min-w-0">
-                  <p className="font-semibold text-[var(--text)] text-sm truncate">{a.title}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-[var(--muted)]">{a.courseName}</p>
-                    <span className="text-[10px] text-gray-300">|</span>
-                    <p className="text-xs text-[var(--muted)]">Tenggat: {a.dueDate}</p>
+                  <p className="font-bold text-slate-800 text-[14px] truncate">{a.title}</p>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">{a.courseName}</p>
+                    <span className="text-[10px] text-slate-200">|</span>
+                    <p className="text-xs text-slate-400 font-medium">Tenggat: {a.dueDate}</p>
                     {a.createdAt && (
                       <>
-                        <span className="text-[10px] text-gray-300">|</span>
-                        <p className="text-[10px] text-indigo-400 font-medium">Dirilis: {new Date(a.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</p>
+                        <span className="text-[10px] text-slate-200">|</span>
+                        <p className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Dirilis: {new Date(a.createdAt).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' })}</p>
                       </>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                <div className="flex items-center gap-2.5 self-start sm:self-auto flex-shrink-0">
                   {a.grade !== undefined && (
-                    <span className="text-sm font-bold text-emerald-600">{a.grade}</span>
+                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">Nilai: {a.grade}</span>
                   )}
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLOR[a.status]}`}>
+                  <span className={`text-[9px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full ${STATUS_COLOR[a.status]}`}>
                     {STATUS_LABEL[a.status]}
                   </span>
                 </div>
