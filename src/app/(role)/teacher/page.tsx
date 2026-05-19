@@ -125,19 +125,19 @@ export default function TeacherDashboard() {
                     const expired = isExpired(s.date, s.endTime);
                     return (
                       <div key={s.id}
-                        className={`flex items-center justify-between gap-4 rounded-xl border bg-white p-4 transition-all ${expired ? "border-slate-100 opacity-60" : "border-slate-200 hover:shadow-sm"}`}>
+                        className={`flex flex-col xs:flex-row xs:items-center justify-between gap-3 rounded-xl border bg-white p-4 transition-all ${expired ? "border-slate-100 opacity-60" : "border-slate-200 hover:shadow-sm"}`}>
                         <div className="flex items-center gap-3">
                           <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${expired ? "bg-slate-100 text-slate-400" : "bg-[#0B213F] text-white"}`}>
                             <Clock size={15} />
                           </div>
-                          <div>
-                            <p className="text-[13px] font-semibold text-slate-800">{s.course.title}</p>
-                            <p className="text-[11px] text-slate-400">{s.startTime} — {s.endTime}</p>
+                          <div className="min-w-0">
+                            <p className="text-[13px] font-semibold text-slate-800 leading-snug truncate">{s.course.title}</p>
+                            <p className="text-[11px] text-slate-400 mt-0.5">{s.startTime} — {s.endTime}</p>
                           </div>
                         </div>
                         {s.meetingLink && (
                           <a href={expired ? undefined : s.meetingLink} target="_blank" rel="noopener noreferrer"
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-semibold transition-all ${expired ? "bg-slate-100 text-slate-300 cursor-not-allowed" : "bg-[#0B213F] text-white hover:bg-[#0B213F]/90"}`}>
+                            className={`flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-[11px] font-semibold transition-all w-full xs:w-auto ${expired ? "bg-slate-100 text-slate-300 cursor-not-allowed" : "bg-[#0B213F] text-white hover:bg-[#0B213F]/90"}`}>
                             {expired ? "Selesai" : "Masuk Room"} <ExternalLink size={11} />
                           </a>
                         )}

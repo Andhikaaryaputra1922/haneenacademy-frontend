@@ -115,10 +115,21 @@ export default function AdminDashboardPage() {
       <div className="mx-auto max-w-6xl space-y-8">
 
         {/* ── Header ── */}
-        <header>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Admin Panel</p>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
-          <p className="mt-0.5 text-sm text-slate-400">Pusat kendali operasional Haneen Academy.</p>
+        <header className="flex items-start gap-3">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-sidebar"))}
+            className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 lg:hidden hover:bg-slate-50 transition-colors shadow-sm"
+            aria-label="Toggle Menu"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="18" x2="20" y2="18" />
+            </svg>
+          </button>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-1">Admin Panel</p>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+            <p className="mt-0.5 text-sm text-slate-400">Pusat kendali operasional Haneen Academy.</p>
+          </div>
         </header>
 
         {/* ── Stat Cards ── */}
