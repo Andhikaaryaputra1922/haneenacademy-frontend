@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import {
   MoveRight, UsersRound, Trophy, GraduationCap,
   Star, AlignRight, X, MessageSquare, Zap,
@@ -35,10 +35,16 @@ export default function LandingClient() {
   
   const heroRef = useRef(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroY = useTransform(heroScroll, [0, 1], [0, 200]);
-  const heroOpacity = useTransform(heroScroll, [0, 0.8], [1, 0]);
-  const videoScale = useTransform(heroScroll, [0, 1], [1, 1.1]);
-  const videoRotateX = useTransform(heroScroll, [0, 1], [10, 0]);
+  
+  const rawY = useTransform(heroScroll, [0, 1], [0, 120]);
+  const rawScale = useTransform(heroScroll, [0, 1], [1, 1.05]);
+  const rawRotateX = useTransform(heroScroll, [0, 1], [8, 0]);
+
+  const springConfig = { stiffness: 90, damping: 25, mass: 0.2 };
+  const heroY = useSpring(rawY, springConfig);
+  const videoScale = useSpring(rawScale, springConfig);
+  const videoRotateX = useSpring(rawRotateX, springConfig);
+  const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -50,7 +56,7 @@ export default function LandingClient() {
     <main className="min-h-screen overflow-x-hidden selection:bg-[#D4AF37]/30 selection:text-[#0B213F]" style={{ fontFamily: "'DM Sans', sans-serif", background: "#061224", color: "#FAF9F6" }}>
       
       <style jsx global>{`
-        * { font-family: var(--font-plus-jakarta), sans-serif !important; }
+        body, main, select, input, textarea, button { font-family: var(--font-plus-jakarta), sans-serif; }
         
         .nav-link { position:relative; }
         .nav-link::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:#D4AF37; border-radius:9px; transition:width .3s ease; }
