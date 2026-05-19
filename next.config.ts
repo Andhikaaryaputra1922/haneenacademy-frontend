@@ -3,7 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   transpilePackages: ["@react-oauth/google", "framer-motion", "lucide-react"],
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    let backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    backendUrl = backendUrl.replace(/\/$/, "");
+    if (!backendUrl.startsWith("http://") && !backendUrl.startsWith("https://")) {
+      backendUrl = `https://${backendUrl}`;
+    }
     return [
       {
         source: "/api/:path*",
@@ -29,12 +33,25 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "source.unsplash.com",
       },
-      {
-        protocol: process.env.NEXT_PUBLIC_API_URL?.startsWith('https') ? 'https' : 'http',
-        hostname: process.env.NEXT_PUBLIC_API_URL ? process.env.NEXT_PUBLIC_API_URL.replace(/^https?:\/\//, '').split(':')[0] : 'localhost',
-        port: process.env.NEXT_PUBLIC_API_URL ? (process.env.NEXT_PUBLIC_API_URL.split(':')[2] || '') : '4000',
-        pathname: "/uploads/**",
-      },
+      (() => {
+        const urlStr = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+        try {
+          const url = new URL(urlStr.startsWith("http") ? urlStr : `https://${urlStr}`);
+          return {
+            protocol: url.protocol.replace(":", "") as "http" | "https",
+            hostname: url.hostname,
+            port: url.port || undefined,
+            pathname: "/uploads/**",
+          };
+        } catch {
+          return {
+            protocol: "http" as const,
+            hostname: "localhost",
+            port: "4000",
+            pathname: "/uploads/**",
+          };
+        }
+      })(),
     ],
   },
 };
