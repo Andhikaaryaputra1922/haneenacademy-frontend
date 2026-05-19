@@ -16,8 +16,10 @@ type Lesson = {
   createdAt: string;
 };
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+
 async function getCourses(token: string): Promise<Course[]> {
-  const response = await fetch("http://localhost:4000/api/courses", {
+  const response = await fetch(`${BACKEND_URL}/api/courses`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -27,7 +29,7 @@ async function getCourses(token: string): Promise<Course[]> {
 }
 
 async function getLessons(courseId: string, token: string): Promise<Lesson[]> {
-  const url = `http://localhost:4000/api/courses/${courseId}/chapters`;
+  const url = `${BACKEND_URL}/api/courses/${courseId}/chapters`;
   const response = await fetch(url, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },

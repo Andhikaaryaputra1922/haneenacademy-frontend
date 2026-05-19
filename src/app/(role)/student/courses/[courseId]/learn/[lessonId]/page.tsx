@@ -3,8 +3,10 @@ import { getAuthCookieName } from "@/shared/lib/auth/jwt";
 import { LearnClient } from "./learn-client";
 import { redirect } from "next/navigation";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+
 async function getLessonData(lessonId: string, token: string) {
-  const res = await fetch(`http://localhost:4000/api/lessons/${lessonId}`, {
+  const res = await fetch(`${BACKEND_URL}/api/lessons/${lessonId}`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -13,7 +15,7 @@ async function getLessonData(lessonId: string, token: string) {
 }
 
 async function getCourseSyllabus(courseId: string, token: string) {
-  const res = await fetch(`http://localhost:4000/api/courses/${courseId}/chapters`, {
+  const res = await fetch(`${BACKEND_URL}/api/courses/${courseId}/chapters`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });

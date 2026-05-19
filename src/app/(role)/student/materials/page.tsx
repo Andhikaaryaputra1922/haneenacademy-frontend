@@ -33,8 +33,10 @@ type CourseWithChapters = {
   lessonLimit: number | null;
 };
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+
 async function getPackageGatedMaterials(token: string): Promise<CourseWithChapters[]> {
-  const res = await fetch("http://localhost:4000/api/student/materials", {
+  const res = await fetch(`${BACKEND_URL}/api/student/materials`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });

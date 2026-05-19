@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * AdminPageLayout — Shared layout wrapper for all admin pages.
  *

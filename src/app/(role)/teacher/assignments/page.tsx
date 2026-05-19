@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AssignmentsClient } from "./assignments-client";
 import TeacherPageLayout from "@/features/users/components/layouts/TeacherPageLayout";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
 
 type Batch = { id: string; name: string; courseId: string; isActive: boolean };
 type Course = { id: string; title: string; teachers: { id: string }[] };
