@@ -18,8 +18,8 @@ type Lesson = {
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
 
-async function getCourses(token: string): Promise<Course[]> {
-  const response = await fetch(`${BACKEND_URL}/api/courses`, {
+async function getCourses(baseUrl: string, token: string): Promise<Course[]> {
+  const response = await fetch(`${baseUrl}/api/courses`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -28,8 +28,8 @@ async function getCourses(token: string): Promise<Course[]> {
   return data.courses ?? [];
 }
 
-async function getLessons(courseId: string, token: string): Promise<Lesson[]> {
-  const url = `${BACKEND_URL}/api/courses/${courseId}/chapters`;
+async function getLessons(baseUrl: string, courseId: string, token: string): Promise<Lesson[]> {
+  const url = `${baseUrl}/api/courses/${courseId}/chapters`;
   const response = await fetch(url, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
@@ -77,7 +77,7 @@ export default async function RecordingsPage() {
   const auth = token ? await verifyUserJwt(token).catch(() => null) : null;
 
   const baseUrl = await getRequestOrigin();
-  const allCourses = await getCourses(token);
+  const allCourses = await getCourses(baseUrl, token);
   const teacherCourses = auth?.role === "TEACHER"
     ? allCourses.filter((c: any) => c.teachers?.some((t: any) => t.id === auth.uid))
     : allCourses;
@@ -86,7 +86,7 @@ export default async function RecordingsPage() {
   const lessonsPerCourse = await Promise.all(
     teacherCourses.map(async (c) => ({
       course: c,
-      lessons: await getLessons(c.id, token),
+      lessons: await getLessons(baseUrl, c.id, token),
     }))
   );
 
