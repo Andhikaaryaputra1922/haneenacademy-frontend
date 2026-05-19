@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import Loading from "@/shared/components/ui/Loading";
 
 import Link from "next/link";
 import {
@@ -502,7 +503,8 @@ export function AssignmentsClient({
         {/* ========================= */}
         {/* STATIC CREATE FORM */}
         {/* ========================= */}
-        <section className="bg-white rounded-[2rem] border border-gray-100 p-8 shadow-sm">
+        <section className="relative bg-white rounded-[2rem] border border-gray-100 p-8 shadow-sm">
+          {loading && <Loading mode="overlay" message="Sedang menerbitkan tugas..." />}
           <div className="flex items-center gap-3 mb-8">
             <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600">
               <Plus size={20} />

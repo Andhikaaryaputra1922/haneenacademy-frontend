@@ -3,7 +3,6 @@ import { getAuthCookieName, verifyUserJwt } from "@/shared/lib/auth/jwt";
 import Link from "next/link";
 import { AssignmentsClient } from "./assignments-client";
 import TeacherPageLayout from "@/features/users/components/layouts/TeacherPageLayout";
-import { getRequestOrigin } from "@/shared/lib/origin";
 
 type Batch = { id: string; name: string; courseId: string; isActive: boolean };
 type Course = { id: string; title: string; teachers: { id: string }[] };
@@ -19,8 +18,12 @@ type Assignment = {
   updatedAt: string;
 };
 
-async function getCourses(baseUrl: string, token: string): Promise<Course[]> {
-  const response = await fetch(`${baseUrl}/api/courses`, {
+import { getBackendUrl } from "@/shared/lib/api";
+
+const BACKEND_URL = getBackendUrl();
+
+async function getCourses(token: string): Promise<Course[]> {
+  const response = await fetch(`${BACKEND_URL}/api/courses`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -29,11 +32,11 @@ async function getCourses(baseUrl: string, token: string): Promise<Course[]> {
   return data.courses ?? [];
 }
 
-async function getBatches(baseUrl: string, token: string, courseIds: string[]): Promise<Batch[]> {
+async function getBatches(token: string, courseIds: string[]): Promise<Batch[]> {
   if (!courseIds.length) return [];
   const results = await Promise.all(
     courseIds.map((cId) =>
-      fetch(`${baseUrl}/api/batches?courseId=${cId}`, {
+      fetch(`${BACKEND_URL}/api/batches?courseId=${cId}`, {
         cache: "no-store",
         headers: { cookie: `${getAuthCookieName()}=${token}` },
       }).then((r) => r.ok ? r.json().then((d: { batches: Batch[] }) => (d.batches ?? []).map(b => ({ ...b, courseId: cId }))) : [])
@@ -42,8 +45,8 @@ async function getBatches(baseUrl: string, token: string, courseIds: string[]): 
   return results.flat();
 }
 
-async function getAssignments(baseUrl: string, token: string): Promise<Assignment[]> {
-  const response = await fetch(`${baseUrl}/api/assignments`, {
+async function getAssignments(token: string): Promise<Assignment[]> {
+  const response = await fetch(`${BACKEND_URL}/api/assignments`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -57,18 +60,16 @@ export default async function TeacherAssignmentsPage() {
   const token = cookieStore.get(getAuthCookieName())?.value ?? "";
   const auth = token ? await verifyUserJwt(token).catch(() => null) : null;
 
-  const baseUrl = await getRequestOrigin();
-
   const [allCourses, assignments] = await Promise.all([
-    getCourses(baseUrl, token),
-    getAssignments(baseUrl, token),
+    getCourses(token),
+    getAssignments(token),
   ]);
 
   const filteredCourses = auth?.role === "TEACHER"
     ? allCourses.filter((c: any) => c.teachers?.some((t: any) => t.id === auth.uid))
     : allCourses;
 
-  const batches = await getBatches(baseUrl, token, filteredCourses.map((c) => c.id));
+  const batches = await getBatches(token, filteredCourses.map((c) => c.id));
 
   return (
     <TeacherPageLayout

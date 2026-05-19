@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Video, Upload, X, Calendar, Clock, Eye, Trash2 } from "lucide-react";
+import Loading from "@/shared/components/ui/Loading";
 
 type Course = { id: string; title: string };
 type Chapter = { id: string; title: string };
@@ -143,7 +144,8 @@ export function RecordingsClient({ courses, batches, lessonsPerCourse }: Props) 
       )}
 
       {/* Upload Form */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8">
+      <div className="relative rounded-2xl border border-slate-200 bg-white p-6 md:p-8">
+        {loading && <Loading mode="overlay" message="Sedang mengupload rekaman..." />}
         <div className="flex items-center gap-3 mb-1">
           <div className="h-9 w-9 rounded-xl bg-[#0B213F] flex items-center justify-center text-[#D4AF37]">
             <Upload size={16} />

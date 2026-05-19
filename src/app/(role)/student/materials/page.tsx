@@ -33,10 +33,12 @@ type CourseWithChapters = {
   lessonLimit: number | null;
 };
 
-import { getRequestOrigin } from "@/shared/lib/origin";
+import { getBackendUrl } from "@/shared/lib/api";
 
-async function getPackageGatedMaterials(baseUrl: string, token: string): Promise<CourseWithChapters[]> {
-  const res = await fetch(`${baseUrl}/api/student/materials`, {
+const BACKEND_URL = getBackendUrl();
+
+async function getPackageGatedMaterials(token: string): Promise<CourseWithChapters[]> {
+  const res = await fetch(`${BACKEND_URL}/api/student/materials`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -48,9 +50,8 @@ async function getPackageGatedMaterials(baseUrl: string, token: string): Promise
 export default async function StudentMaterialsPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(getAuthCookieName())?.value ?? "";
-  const baseUrl = await getRequestOrigin();
 
-  const courses = await getPackageGatedMaterials(baseUrl, token);
+  const courses = await getPackageGatedMaterials(token);
 
   return (
     <main className="min-h-screen bg-[var(--base)] px-6 py-10">

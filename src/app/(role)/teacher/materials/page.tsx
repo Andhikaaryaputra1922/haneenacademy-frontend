@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { getAuthCookieName, verifyUserJwt } from "@/shared/lib/auth/jwt";
 import { RecordingsClient } from "./materials-client";
-import { getRequestOrigin } from "@/shared/lib/origin";
 import TeacherPageLayout from "@/features/users/components/layouts/TeacherPageLayout";
 
 type Course = { id: string; title: string; teacherId: string };
@@ -16,10 +15,12 @@ type Lesson = {
   createdAt: string;
 };
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+import { getBackendUrl } from "@/shared/lib/api";
 
-async function getCourses(baseUrl: string, token: string): Promise<Course[]> {
-  const response = await fetch(`${baseUrl}/api/courses`, {
+const BACKEND_URL = getBackendUrl();
+
+async function getCourses(token: string): Promise<Course[]> {
+  const response = await fetch(`${BACKEND_URL}/api/courses`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -28,8 +29,8 @@ async function getCourses(baseUrl: string, token: string): Promise<Course[]> {
   return data.courses ?? [];
 }
 
-async function getLessons(baseUrl: string, courseId: string, token: string): Promise<Lesson[]> {
-  const url = `${baseUrl}/api/courses/${courseId}/chapters`;
+async function getLessons(courseId: string, token: string): Promise<Lesson[]> {
+  const url = `${BACKEND_URL}/api/courses/${courseId}/chapters`;
   const response = await fetch(url, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
@@ -58,11 +59,11 @@ async function getLessons(baseUrl: string, courseId: string, token: string): Pro
   return allLessons;
 }
 
-async function getBatches(baseUrl: string, token: string, courseIds: string[]): Promise<any[]> {
+async function getBatches(token: string, courseIds: string[]): Promise<any[]> {
   if (!courseIds.length) return [];
   const results = await Promise.all(
     courseIds.map((cId) =>
-      fetch(`${baseUrl}/api/batches?courseId=${cId}`, {
+      fetch(`${BACKEND_URL}/api/batches?courseId=${cId}`, {
         cache: "no-store",
         headers: { cookie: `${getAuthCookieName()}=${token}` },
       }).then((r) => r.ok ? r.json().then((d: { batches: any[] }) => (d.batches ?? []).map(b => ({ ...b, courseId: cId }))) : [])
@@ -76,17 +77,16 @@ export default async function RecordingsPage() {
   const token = cookieStore.get(getAuthCookieName())?.value ?? "";
   const auth = token ? await verifyUserJwt(token).catch(() => null) : null;
 
-  const baseUrl = await getRequestOrigin();
-  const allCourses = await getCourses(baseUrl, token);
+  const allCourses = await getCourses(token);
   const teacherCourses = auth?.role === "TEACHER"
     ? allCourses.filter((c: any) => c.teachers?.some((t: any) => t.id === auth.uid))
     : allCourses;
-  const batches = await getBatches(baseUrl, token, teacherCourses.map((c) => c.id));
+  const batches = await getBatches(token, teacherCourses.map((c) => c.id));
 
   const lessonsPerCourse = await Promise.all(
     teacherCourses.map(async (c) => ({
       course: c,
-      lessons: await getLessons(baseUrl, c.id, token),
+      lessons: await getLessons(c.id, token),
     }))
   );
 

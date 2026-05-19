@@ -80,7 +80,18 @@ export default function LandingClient() {
       ══════════════════════════════════ */}
       <nav className={`fixed top-0 z-[100] w-full transition-all duration-500 ${scrolled ? "h-16 bg-[#061224]/80 backdrop-blur-md border-b border-white/5" : "h-24 bg-transparent"}`}>
         <Link href="/" className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-[110]">
-          <img src="/images/logo.svg" alt="Logo" className="h-8 md:h-10 w-auto object-contain brightness-0 invert" />
+          <img 
+            src="/images/logo.svg" 
+            alt="Logo" 
+            style={{ 
+              height: scrolled ? "80px" : "240px", 
+              width: "auto", 
+              maxHeight: "none", 
+              maxWidth: "none", 
+              transition: "all 0.3s ease" 
+            }}
+            className="object-contain brightness-0 invert" 
+          />
         </Link>
         <div className="hidden items-center gap-10 lg:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
           {["Program", "Metodologi", "Galeri", "Testimoni"].map((item) => (

@@ -3,10 +3,12 @@ import { getAuthCookieName } from "@/shared/lib/auth/jwt";
 import { LearnClient } from "./learn-client";
 import { redirect } from "next/navigation";
 
-import { getRequestOrigin } from "@/shared/lib/origin";
+import { getBackendUrl } from "@/shared/lib/api";
 
-async function getLessonData(baseUrl: string, lessonId: string, token: string) {
-  const res = await fetch(`${baseUrl}/api/lessons/${lessonId}`, {
+const BACKEND_URL = getBackendUrl();
+
+async function getLessonData(lessonId: string, token: string) {
+  const res = await fetch(`${BACKEND_URL}/api/lessons/${lessonId}`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -14,8 +16,8 @@ async function getLessonData(baseUrl: string, lessonId: string, token: string) {
   return res.json();
 }
 
-async function getCourseSyllabus(baseUrl: string, courseId: string, token: string) {
-  const res = await fetch(`${baseUrl}/api/courses/${courseId}/chapters`, {
+async function getCourseSyllabus(courseId: string, token: string) {
+  const res = await fetch(`${BACKEND_URL}/api/courses/${courseId}/chapters`, {
     cache: "no-store",
     headers: { cookie: `${getAuthCookieName()}=${token}` },
   });
@@ -27,11 +29,10 @@ export default async function StudentLearnPage({ params }: { params: Promise<{ c
   const { courseId, lessonId } = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get(getAuthCookieName())?.value ?? "";
-  const baseUrl = await getRequestOrigin();
 
   // If lessonId is "start", we should find the first lesson of the course
   let targetLessonId = lessonId;
-  const syllabus = await getCourseSyllabus(baseUrl, courseId, token);
+  const syllabus = await getCourseSyllabus(courseId, token);
 
 
   if (lessonId === "start") {
@@ -52,7 +53,7 @@ export default async function StudentLearnPage({ params }: { params: Promise<{ c
     }
   }
 
-  const lessonRes = await getLessonData(baseUrl, targetLessonId, token);
+  const lessonRes = await getLessonData(targetLessonId, token);
   if (!lessonRes) return <div className="p-20 text-center">Materi tidak ditemukan atau Anda tidak memiliki akses.</div>;
 
   return (
