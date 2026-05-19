@@ -74,15 +74,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full space-y-7">
-
+    <div className="w-full space-y-6">
       {/* Header */}
-      <div className="space-y-1.5">
-
-        <h1 className="font-black tracking-tighter" style={{ fontSize: "28px", color: "#0B213F", lineHeight: 1.1 }}>
-          Selamat Datang<br />Kembali
+      <div className="text-center space-y-1">
+        <h1 style={{ fontSize: "22px", fontWeight: 800, color: "#0B213F", lineHeight: 1.2 }}>
+          Selamat Datang Kembali
         </h1>
-        <p style={{ fontSize: "13px", fontWeight: 500, color: "rgba(11,33,63,0.45)", marginTop: "6px" }}>
+        <p style={{ fontSize: "13px", color: "#8892a4", fontWeight: 500 }}>
           Belum punya akun?{" "}
           <Link href="/register" style={{ color: "#D4AF37", fontWeight: 700 }} className="hover:underline">
             Daftar sekarang
@@ -125,32 +123,30 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors"
-              style={{ color: "rgba(11,33,63,0.35)" }}
+              style={{ color: "#b0b8c8" }}
             >
-              {showPassword ? <EyeOff size={17} strokeWidth={2} /> : <Eye size={17} strokeWidth={2} />}
+              {showPassword ? <EyeOff size={16} strokeWidth={2} /> : <Eye size={16} strokeWidth={2} />}
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="flex items-center gap-2.5 rounded-xl p-3" style={{ background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.15)" }}>
+          <div className="flex items-center gap-2.5 rounded-xl p-3" style={{ background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.15)" }}>
             <div className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />
             <p style={{ fontSize: "12px", fontWeight: 600, color: "#dc2626" }}>{error}</p>
           </div>
         )}
 
         <button type="submit" disabled={isLoading} className="auth-btn-primary">
-          {isLoading ? "Memproses..." : "Masuk ke Akun"}
+          {isLoading ? "Memproses..." : "Masuk"}
         </button>
       </form>
 
       {/* Divider */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px" style={{ background: "rgba(11,33,63,0.08)" }} />
-        <span style={{ fontSize: "10px", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(11,33,63,0.3)" }}>
-          atau
-        </span>
-        <div className="flex-1 h-px" style={{ background: "rgba(11,33,63,0.08)" }} />
+        <div className="flex-1 h-px" style={{ background: "#ebedf2" }} />
+        <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#c8cdd8" }}>atau</span>
+        <div className="flex-1 h-px" style={{ background: "#ebedf2" }} />
       </div>
 
       {/* Google */}
@@ -159,19 +155,20 @@ export default function LoginPage() {
           onSuccess={onGoogleSuccess}
           onError={() => toast.error("Google Login Failed")}
           theme="outline"
-          shape="pill"
+          shape="rectangular"
           size="large"
+          width="360"
         />
       </div>
 
       {/* Legal */}
-      <p className="text-center" style={{ fontSize: "10.5px", color: "rgba(11,33,63,0.35)", lineHeight: 1.6 }}>
+      <p className="text-center" style={{ fontSize: "10.5px", color: "#b0b8c8", lineHeight: 1.6 }}>
         Dengan masuk, Anda menyetujui{" "}
-        <button onClick={showSyarat} type="button" style={{ fontWeight: 700, color: "rgba(11,33,63,0.55)" }} className="hover:text-[#0B213F] transition-colors">
+        <button onClick={showSyarat} type="button" style={{ fontWeight: 700, color: "#8892a4" }} className="hover:text-[#0B213F] transition-colors">
           Syarat & Ketentuan
         </button>
         {" "}serta{" "}
-        <button onClick={showPrivasi} type="button" style={{ fontWeight: 700, color: "rgba(11,33,63,0.55)" }} className="hover:text-[#0B213F] transition-colors">
+        <button onClick={showPrivasi} type="button" style={{ fontWeight: 700, color: "#8892a4" }} className="hover:text-[#0B213F] transition-colors">
           Kebijakan Privasi
         </button>.
       </p>

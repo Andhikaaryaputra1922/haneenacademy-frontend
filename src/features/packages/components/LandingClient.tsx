@@ -10,6 +10,8 @@ import {
   BadgeCheck, Flame
 } from "lucide-react";
 import { CourseCard } from "@/shared/components/ui/CourseCard";
+import GradualBlur from "@/shared/components/ui/GradualBlur";
+import ScrollStack, { ScrollStackItem } from "@/shared/components/ui/ScrollStack";
 
 /* ─────────────────────────────────────────
    DESIGN TOKENS & UTILS
@@ -174,8 +176,16 @@ export default function LandingClient() {
 
           </div>
         </motion.div>
-        
 
+        {/* Ambient bottom transition gradual blur */}
+        <GradualBlur
+          position="bottom"
+          height="12rem"
+          strength={3}
+          divCount={8}
+          curve="bezier"
+          exponential={true}
+        />
       </section>
 
       {/* Main Content wrapper with light background */}
@@ -359,6 +369,98 @@ export default function LandingClient() {
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-[1500ms] pointer-events-none mix-blend-overlay" style={{ background: 'radial-gradient(circle at top right, rgba(255,255,255,0.4) 0%, transparent 60%)' }} />
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════════════════════════════
+            STEPS TO SUCCESS (SCROLLSTACK)
+        ══════════════════════════════════ */}
+        <section id="langkah-belajar" className="py-32 bg-[#FAF9F6]">
+          <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20">
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
+                <p className="s-label mb-4">Langkah Menuju Sukses</p>
+                <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                  Proses Belajar yang<br /><span className="gold-gradient-text">Terstruktur & Berkah</span>
+                </h2>
+              </motion.div>
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="max-w-md">
+                <p className="text-slate-500 font-medium leading-relaxed">
+                  Kami memandu perjalanan Anda dari awal pendaftaran hingga memperoleh kelulusan resmi dengan metode yang teruji dan personal.
+                </p>
+              </motion.div>
+            </div>
+
+            {/* ScrollStack wrapper container with custom bounds */}
+            <div className="h-[600px] relative overflow-hidden rounded-[2.5rem] bg-[#061224] border border-white/5 shadow-2xl p-4">
+              <ScrollStack
+                itemDistance={70}
+                itemScale={0.03}
+                itemStackDistance={30}
+                stackPosition="20%"
+                scaleEndPosition="10%"
+                baseScale={0.88}
+                rotationAmount={-1}
+                blurAmount={1.5}
+                useWindowScroll={false}
+              >
+                {/* Item 1 */}
+                <ScrollStackItem itemClassName="!bg-[#0B213F] !border-white/5 !text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-8 p-10 md:p-12">
+                  <div className="flex-1">
+                    <span className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-4 block">Langkah 01</span>
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-white">Konsultasi & Target Belajar</h3>
+                    <p className="text-white/60 text-sm md:text-base leading-relaxed max-w-xl">
+                      Pilih paket belajar terbaik Anda dan konsultasikan target pembelajaran Al-Qur'an secara tatap muka dengan tim akademik ahli kami untuk penyesuaian kurikulum personal.
+                    </p>
+                  </div>
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center text-[#D4AF37] shrink-0 self-center">
+                    <Sparkles size={36} />
+                  </div>
+                </ScrollStackItem>
+
+                {/* Item 2 */}
+                <ScrollStackItem itemClassName="!bg-white !border-slate-100 !text-[#061224] flex flex-col md:flex-row items-start md:items-center justify-between gap-8 p-10 md:p-12">
+                  <div className="flex-1">
+                    <span className="text-[#061224]/50 text-xs font-black uppercase tracking-widest mb-4 block">Langkah 02</span>
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-[#061224]">Bimbingan Interaktif 1-on-1</h3>
+                    <p className="text-slate-500 text-sm md:text-base leading-relaxed max-w-xl">
+                      Nikmati kelas tatap muka virtual yang intim, interaktif, dan fokus penuh bersama ustadz/ustadzah pilihan yang memiliki kompetensi sanad dan bersertifikasi formal.
+                    </p>
+                  </div>
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-[#061224]/5 flex items-center justify-center text-[#061224] shrink-0 self-center">
+                    <UsersRound size={36} />
+                  </div>
+                </ScrollStackItem>
+
+                {/* Item 3 */}
+                <ScrollStackItem itemClassName="!bg-white !border-slate-100 !text-[#061224] flex flex-col md:flex-row items-start md:items-center justify-between gap-8 p-10 md:p-12">
+                  <div className="flex-1">
+                    <span className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-4 block">Langkah 03</span>
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-[#061224]">Evaluasi & Audio Feedback</h3>
+                    <p className="text-slate-500 text-sm md:text-base leading-relaxed max-w-xl">
+                      Dapatkan rekam presensi, evaluasi mingguan detail, serta umpan balik suara (audio feedback) langsung dari mentor untuk perbaikan tajwid & makhorijul huruf secara presisi.
+                    </p>
+                  </div>
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-[#D4AF37]/10 flex items-center justify-center text-[#B48E2D] shrink-0 self-center">
+                    <BadgeCheck size={36} />
+                  </div>
+                </ScrollStackItem>
+
+                {/* Item 4 */}
+                <ScrollStackItem itemClassName="!bg-[#061224] !border-white/5 !text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-8 p-10 md:p-12">
+                  <div className="flex-1">
+                    <span className="text-[#D4AF37] text-xs font-black uppercase tracking-widest mb-4 block">Langkah 04</span>
+                    <h3 className="text-2xl md:text-3xl font-black tracking-tight mb-4 text-white">Ujian Akhir & Sertifikasi</h3>
+                    <p className="text-white/60 text-sm md:text-base leading-relaxed max-w-xl">
+                      Selesaikan seluruh bimbingan paket belajar, ikuti evaluasi ujian kelayakan, dan dapatkan sertifikat resmi kelulusan digital Haneen Academy terakreditasi formal.
+                    </p>
+                  </div>
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl bg-gradient-to-br from-[#D4AF37] to-[#B48E2D] flex items-center justify-center text-[#061224] shrink-0 self-center">
+                    <Trophy size={36} />
+                  </div>
+                </ScrollStackItem>
+              </ScrollStack>
             </div>
           </div>
         </section>
