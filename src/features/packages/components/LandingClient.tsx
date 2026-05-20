@@ -84,26 +84,25 @@ export default function LandingClient() {
         
         {/* ── MOBILE LAYOUT ── */}
         <div className="lg:hidden flex items-center justify-between h-full px-4">
-          {/* Logo + Brand Name */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div style={{ overflow: "hidden", height: "44px", width: "44px", position: "relative", borderRadius: "8px" }}>
+          {/* Logo */}
+          <Link href="/">
+            <div style={{ overflow: "hidden", height: "48px", width: "72px", position: "relative" }}>
               <img
                 src="/images/logo.svg"
                 alt="Logo"
                 style={{
-                  height: "44px",
+                  height: "180px",
                   width: "auto",
                   maxHeight: "none",
                   maxWidth: "none",
                   position: "absolute",
-                  left: "calc(-7874px * 0.33)",
+                  left: "-61px",
                   top: "50%",
-                  transform: "translateY(-50%)"
+                  transform: "translateY(-53%)"
                 }}
                 className="brightness-0 invert"
               />
             </div>
-            <span className="text-white font-black text-lg tracking-tight leading-none">HANEEN</span>
           </Link>
 
           {/* Hamburger Button — bordered square like reference */}
@@ -125,7 +124,7 @@ export default function LandingClient() {
           <div style={{
             overflow: "hidden",
             height: scrolled ? "80px" : "240px",
-            width: scrolled ? "180px" : "540px",
+            width: scrolled ? "150px" : "450px",
             transition: "all 0.3s ease",
             position: "relative"
           }}>
@@ -133,14 +132,14 @@ export default function LandingClient() {
               src="/images/logo.svg"
               alt="Logo"
               style={{
-                height: "100%",
+                height: scrolled ? "300px" : "900px",
                 width: "auto",
                 maxHeight: "none",
                 maxWidth: "none",
                 position: "absolute",
-                left: "calc(-7874px * 0.33)",
+                left: scrolled ? "-101px" : "-304px",
                 top: "50%",
-                transform: "translateY(-50%)"
+                transform: "translateY(-53%)"
               }}
               className="brightness-0 invert"
             />

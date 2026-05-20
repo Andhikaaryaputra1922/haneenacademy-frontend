@@ -122,27 +122,24 @@ export default function BaseSidebar({
       >
         {/* ── Logo ── */}
         <div className={`flex h-24 shrink-0 items-center justify-center overflow-hidden border-b border-white/5 ${collapsed ? "px-2" : "px-4"}`}>
-          <Link href={homeHref} className="flex items-center gap-2.5">
-            <div style={{ overflow: "hidden", height: "44px", width: "44px", position: "relative", borderRadius: "6px", flexShrink: 0 }}>
+          <Link href={homeHref} className="flex items-center">
+            <div style={{ overflow: "hidden", height: "48px", width: collapsed ? "48px" : "72px", position: "relative", transition: "width 0.3s ease" }}>
               <img
                 src="/images/logo.svg"
                 alt="Haneen Academy"
                 style={{
-                  height: "44px",
+                  height: "180px",
                   width: "auto",
                   maxHeight: "none",
                   maxWidth: "none",
                   position: "absolute",
-                  left: "calc(-7874px * 0.33)",
+                  left: "-61px",
                   top: "50%",
-                  transform: "translateY(-50%)",
+                  transform: "translateY(-53%)",
                   filter: "brightness(0) invert(1)"
                 }}
               />
             </div>
-            {!collapsed && (
-              <span className="text-white font-black text-sm tracking-tight leading-none whitespace-nowrap">HANEEN</span>
-            )}
           </Link>
         </div>
 
