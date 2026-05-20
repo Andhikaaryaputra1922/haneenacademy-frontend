@@ -80,29 +80,69 @@ export default function LandingClient() {
       {/* ══════════════════════════════════
           NAVBAR
       ══════════════════════════════════ */}
-      <nav className={`fixed top-0 z-[100] w-full transition-all duration-500 ${scrolled ? "h-16 bg-[#061224]/80 backdrop-blur-md border-b border-white/5" : "h-24 bg-transparent"}`}>
-        <Link href="/" className="absolute left-0 lg:left-12 top-1/2 -translate-y-1/2 z-[110]">
-          <div style={{ 
+      <nav className={`fixed top-0 z-[100] w-full transition-all duration-500 ${scrolled ? "bg-[#061224]/90 backdrop-blur-md border-b border-white/5" : "bg-[#061224]"} h-16 lg:h-24 lg:bg-transparent`}>
+        
+        {/* ── MOBILE LAYOUT ── */}
+        <div className="lg:hidden flex items-center justify-between h-full px-4">
+          {/* Logo + Brand Name */}
+          <Link href="/" className="flex items-center gap-2.5">
+            <div style={{ overflow: "hidden", height: "44px", width: "44px", position: "relative", borderRadius: "8px" }}>
+              <img
+                src="/images/logo.svg"
+                alt="Logo"
+                style={{
+                  height: "44px",
+                  width: "auto",
+                  maxHeight: "none",
+                  maxWidth: "none",
+                  position: "absolute",
+                  left: "calc(-7874px * 0.33)",
+                  top: "50%",
+                  transform: "translateY(-50%)"
+                }}
+                className="brightness-0 invert"
+              />
+            </div>
+            <span className="text-white font-black text-lg tracking-tight leading-none">HANEEN</span>
+          </Link>
+
+          {/* Hamburger Button — bordered square like reference */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-all"
+            aria-label="Menu"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div key={menuOpen ? "close" : "open"} initial={{ opacity: 0, rotate: -90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: 90 }} transition={{ duration: 0.2 }}>
+                {menuOpen ? <X size={20} /> : <AlignRight size={20} />}
+              </motion.div>
+            </AnimatePresence>
+          </button>
+        </div>
+
+        {/* ── DESKTOP LAYOUT ── */}
+        <Link href="/" className="hidden lg:flex absolute left-12 top-1/2 -translate-y-1/2 z-[110]">
+          <div style={{
             overflow: "hidden",
             height: scrolled ? "80px" : "240px",
             width: scrolled ? "180px" : "540px",
             transition: "all 0.3s ease",
             position: "relative"
           }}>
-            <img 
-              src="/images/logo.svg" 
-              alt="Logo" 
-              style={{ 
+            <img
+              src="/images/logo.svg"
+              alt="Logo"
+              style={{
                 height: "100%",
                 width: "auto",
-                maxHeight: "none", 
+                maxHeight: "none",
                 maxWidth: "none",
                 position: "absolute",
                 left: "calc(-7874px * 0.33)",
                 top: "50%",
                 transform: "translateY(-50%)"
               }}
-              className="brightness-0 invert" 
+              className="brightness-0 invert"
             />
           </div>
         </Link>
@@ -115,20 +155,14 @@ export default function LandingClient() {
             </a>
           ))}
         </div>
-        <div className="hidden items-center gap-6 lg:flex absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-[110]">
+        <div className="hidden items-center gap-6 lg:flex absolute right-12 top-1/2 -translate-y-1/2 z-[110]">
           <Link href="/login" className="text-[11px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors">Masuk</Link>
           <Link href="/login" className="group relative overflow-hidden rounded-full bg-white px-8 py-3 text-[11px] font-black uppercase tracking-widest text-[#061224] transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
             <span className="relative z-10 flex items-center gap-2">Daftar <MoveRight size={14} className="group-hover:translate-x-1 transition-transform" /></span>
           </Link>
         </div>
-        <button className="lg:hidden absolute right-6 top-1/2 -translate-y-1/2 p-2 rounded-xl glass-panel text-white" onClick={() => setMenuOpen(!menuOpen)}>
-          <AnimatePresence mode="wait">
-            <motion.div key={menuOpen ? "close" : "open"} initial={{ opacity: 0, rotate: -90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: 90 }} transition={{ duration: 0.2 }}>
-              {menuOpen ? <X size={20} /> : <AlignRight size={20} />}
-            </motion.div>
-          </AnimatePresence>
-        </button>
       </nav>
+
 
       {/* ══════════════════════════════════
           HERO (ULTRA PREMIUM)
