@@ -121,25 +121,14 @@ export default function BaseSidebar({
         `}
       >
         {/* ── Logo ── */}
-        <div className={`flex h-24 shrink-0 items-center justify-center overflow-hidden border-b border-white/5 ${collapsed ? "px-2" : "px-4"}`}>
-          <Link href={homeHref} className="flex items-center">
-            <div style={{ overflow: "hidden", height: "48px", width: collapsed ? "48px" : "72px", position: "relative", transition: "width 0.3s ease" }}>
-              <img
-                src="/images/logo.svg"
-                alt="Haneen Academy"
-                style={{
-                  height: "180px",
-                  width: "auto",
-                  maxHeight: "none",
-                  maxWidth: "none",
-                  position: "absolute",
-                  left: "-61px",
-                  top: "50%",
-                  transform: "translateY(-53%)",
-                  filter: "brightness(0) invert(1)"
-                }}
-              />
-            </div>
+        <div className={`flex h-24 shrink-0 items-center justify-center overflow-hidden border-b border-white/5 ${collapsed ? "px-2" : "px-0"}`}>
+          <Link href={homeHref} className="relative h-20 w-full flex items-center justify-center">
+            <img
+              src="/images/logo.svg"
+              alt="Haneen Academy"
+              className={`w-full h-full object-contain transition-all duration-500 ${collapsed ? "scale-150" : "scale-[3.5]"}`}
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
           </Link>
         </div>
 

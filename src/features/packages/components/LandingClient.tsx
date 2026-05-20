@@ -80,32 +80,25 @@ export default function LandingClient() {
       {/* ══════════════════════════════════
           NAVBAR
       ══════════════════════════════════ */}
-      <nav className={`fixed top-0 z-[100] w-full transition-all duration-500 ${scrolled ? "bg-[#061224]/90 backdrop-blur-md border-b border-white/5" : "bg-[#061224]"} h-16 lg:h-24 lg:bg-transparent`}>
+      <nav className="fixed top-0 z-[100] w-full h-16 lg:h-20 bg-[#061224]/95 backdrop-blur-md border-b border-white/5">
         
         {/* ── MOBILE LAYOUT ── */}
         <div className="lg:hidden flex items-center justify-between h-full px-4">
           {/* Logo */}
           <Link href="/">
-            <div style={{ overflow: "hidden", height: "48px", width: "72px", position: "relative" }}>
-              <img
-                src="/images/logo.svg"
-                alt="Logo"
-                style={{
-                  height: "180px",
-                  width: "auto",
-                  maxHeight: "none",
-                  maxWidth: "none",
-                  position: "absolute",
-                  left: "-61px",
-                  top: "50%",
-                  transform: "translateY(-53%)"
-                }}
-                className="brightness-0 invert"
-              />
-            </div>
+            <div style={{
+              width: "92px",
+              height: "44px",
+              backgroundImage: "url('/images/logo.svg')",
+              backgroundSize: "200px 200px",
+              backgroundPosition: "-62px -83px",
+              backgroundRepeat: "no-repeat",
+              filter: "brightness(0) invert(1)",
+              flexShrink: 0
+            }} />
           </Link>
 
-          {/* Hamburger Button — bordered square like reference */}
+          {/* Hamburger Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/30 text-white hover:bg-white/10 transition-all"
@@ -122,28 +115,14 @@ export default function LandingClient() {
         {/* ── DESKTOP LAYOUT ── */}
         <Link href="/" className="hidden lg:flex absolute left-12 top-1/2 -translate-y-1/2 z-[110]">
           <div style={{
-            overflow: "hidden",
-            height: scrolled ? "80px" : "240px",
-            width: scrolled ? "150px" : "450px",
-            transition: "all 0.3s ease",
-            position: "relative"
-          }}>
-            <img
-              src="/images/logo.svg"
-              alt="Logo"
-              style={{
-                height: scrolled ? "300px" : "900px",
-                width: "auto",
-                maxHeight: "none",
-                maxWidth: "none",
-                position: "absolute",
-                left: scrolled ? "-101px" : "-304px",
-                top: "50%",
-                transform: "translateY(-53%)"
-              }}
-              className="brightness-0 invert"
-            />
-          </div>
+            width: "115px",
+            height: "52px",
+            backgroundImage: "url('/images/logo.svg')",
+            backgroundSize: "237px 237px",
+            backgroundPosition: "-74px -99px",
+            backgroundRepeat: "no-repeat",
+            filter: "brightness(0) invert(1)"
+          }} />
         </Link>
 
         <div className="hidden items-center gap-10 lg:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
